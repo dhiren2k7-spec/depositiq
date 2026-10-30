@@ -3,7 +3,7 @@
     "description": "Peer bank deposit rates sourced from Curinos Deposit Rate Survey. Update weekly.",
     "last_updated": "2026-10-26",
     "source": "Curinos Connect - Deposit Rate Survey 10/26/2026",
-    "note": "CD rates in APY % for $25,000-$99,999 tier. savings/mma from prior data. null = product not offered or N/A."
+    "note": "CD rates in APY % for $100,000-$249,999 tier. savings/mma from prior data. null = product not offered or N/A."
   },
   "Flagstar Bank NA": {
     "checking_apy": 0.01,
@@ -39,7 +39,7 @@
     "cd_3mo": 0.010,
     "cd_6mo": 3.500,
     "cd_12mo": 3.050,
-    "cd_24mo": 0.050
+    "cd_24mo": 2.750
   },
   "OceanFirst Bank NA": {
     "checking_apy": 0.01,
@@ -111,16 +111,16 @@
     "cd_3mo": 0.060,
     "cd_6mo": 3.500,
     "cd_12mo": 4.250,
-    "cd_24mo": 1.760
+    "cd_24mo": 2.270
   },
   "JP Morgan Chase": {
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.01,
-    "cd_3mo": 3.000,
-    "cd_6mo": 3.000,
-    "cd_12mo": 2.500,
-    "cd_24mo": 2.400
+    "cd_3mo": 3.450,
+    "cd_6mo": 3.350,
+    "cd_12mo": 2.950,
+    "cd_24mo": 2.850
   },
   "Truist": {
     "checking_apy": 0.01,
@@ -146,8 +146,8 @@
     "mma": 0.25,
     "cd_3mo": 0.250,
     "cd_6mo": 0.250,
-    "cd_12mo": 0.350,
-    "cd_24mo": 0.450
+    "cd_12mo": 0.400,
+    "cd_24mo": 0.500
   },
   "Ally Bank": {
     "checking_apy": null,
