@@ -19,6 +19,15 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install system dependencies for weasyprint
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0 \
+            libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+
+      - name: Install Python dependencies
+        run: pip install weasyprint --break-system-packages
+
       - name: Run DepositIQ
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -28,10 +37,13 @@ jobs:
           cd src
           python main.py
 
-      - name: Upload Excel artifact
+      - name: Upload report artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: depositiq-excel-${{ github.run_id }}
-          path: output/*.xlsx
+          name: depositiq-report-${{ github.run_id }}
+          path: |
+            output/*.xlsx
+            output/*.html
+            output/*.pdf
           retention-days: 30

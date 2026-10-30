@@ -4,6 +4,8 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 from datetime import datetime
 
 GMAIL_APP_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]
@@ -264,16 +266,58 @@ def build_html_email(config, report, fred_data):
 
     return html
 
-def send_email(html_body, to_email, from_email, week_date=None):
+def generate_pdf(html_body, output_path):
+    """Convert HTML report to PDF using weasyprint."""
+    try:
+        from weasyprint import HTML
+        HTML(string=html_body).write_pdf(output_path)
+        return True
+    except Exception as e:
+        print(f"  PDF generation failed: {e}")
+        return False
+
+
+def _attach_file(msg, path, filename, mime_type="application/octet-stream"):
+    with open(path, "rb") as f:
+        part = MIMEBase(*mime_type.split("/", 1))
+        part.set_payload(f.read())
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", "attachment", filename=filename)
+    msg.attach(part)
+
+
+def send_email(html_body, to_email, from_email, week_date=None, excel_path=None, html_path=None, pdf_path=None):
     if week_date is None:
         week_date = datetime.now().strftime("%b %d, %Y")
 
-    msg = MIMEMultipart("alternative")
+    safe_date = week_date.replace(" ", "_").replace(",", "")
+    msg = MIMEMultipart("mixed")
     msg["Subject"] = f"DepositIQ — Popular Bank Rate Intelligence — {week_date}"
     msg["From"] = f"DepositIQ <{GMAIL_USER}>"
     msg["To"] = to_email
 
-    msg.attach(MIMEText(html_body, "html"))
+    # Inline HTML body
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(html_body, "html"))
+    msg.attach(alt)
+
+    # Excel attachment
+    if excel_path and os.path.exists(excel_path):
+        _attach_file(msg, excel_path,
+                     f"DepositIQ_{safe_date}.xlsx",
+                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    # HTML attachment
+    if html_path and os.path.exists(html_path):
+        _attach_file(msg, html_path,
+                     f"DepositIQ_{safe_date}.html",
+                     "text/html")
+
+    # PDF attachment
+    if pdf_path and os.path.exists(pdf_path):
+        _attach_file(msg, pdf_path,
+                     f"DepositIQ_{safe_date}.pdf",
+                     "application/pdf")
 
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
