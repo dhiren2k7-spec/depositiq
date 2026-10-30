@@ -256,7 +256,7 @@ def build_html_email(config, report, fred_data):
 
   <!-- Footer -->
   <div style="border-top:1px solid {BORDER};padding-top:14px;font-size:10px;color:{TEXT2};text-align:center;">
-    DepositIQ • Automated deposit intelligence powered by FDIC BankFind + FRED + Claude AI
+    DepositIQ • Automated deposit intelligence powered by FDIC BankFind + FRED
     • Delivered every Monday 6:45 AM ET • Data may have 1-week lag
   </div>
 

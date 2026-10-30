@@ -136,14 +136,14 @@ def generate_report(subject_banks, peer_groups, fred_data):
                 raw = raw[4:]
         return json.loads(raw.strip())
     except Exception as e:
-        print(f"  [WARN] AI report generation failed ({e}), using fallback narrative")
+        print(f"  [WARN] Report generation failed ({e}), using fallback narrative")
         return _fallback_report(subject_banks, peer_groups, fred_data)
 
 
 def _fallback_report(subject_banks, peer_groups, fred_data):
     week = datetime.now().strftime("%B %d, %Y")
     return {
-        "week_summary": f"Week of {week} — AI narrative unavailable. Rate data populated from curated source file.",
+        "week_summary": f"Week of {week} — Narrative unavailable. Rate data populated from curated source file.",
         "top_priority": "Review peer rate tables and confirm accuracy before distribution.",
         "ny_metro_analysis": {
             "position": "Popular Bank CD rates are competitive vs NY Metro regional peers.",
