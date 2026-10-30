@@ -235,7 +235,7 @@ def build_html_email(config, report, fred_data):
   <!-- Peer Tables -->
   {peer_tables}
 
-  <!-- AI Analysis Cards -->
+  <!-- Rate Analysis Cards -->
   <div style="margin-bottom:24px;">
     <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Regional Analysis & Recommendations</div>
     {analysis_cards}
