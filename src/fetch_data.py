@@ -1,14 +1,23 @@
 import json
+import os
 import urllib.request
 import urllib.error
 import urllib.parse
 from datetime import datetime
 
-from scraper import scrape_bank
+PEER_RATES_PATH = os.path.join(os.path.dirname(__file__), "../config/peer_rates.json")
+
+def _load_peer_rates():
+    try:
+        with open(PEER_RATES_PATH) as f:
+            data = json.load(f)
+        return {k: v for k, v in data.items() if not k.startswith("_")}
+    except Exception:
+        return {}
 
 def fetch_peer_rates(bank_name):
-    """Fetch deposit product rates by scraping the bank's public rates page."""
-    return scrape_bank(bank_name)
+    rates = _load_peer_rates()
+    return rates.get(bank_name, {})
 
 def fetch_fred_data(fred_api_key):
     series = {
@@ -42,16 +51,14 @@ def fetch_fred_data(fred_api_key):
 
 def fetch_all_peer_rates(config):
     peer_groups = config["peer_groups"]
-    seen = {}
+    peer_rates = _load_peer_rates()
 
     for gk, grp in peer_groups.items():
         enriched = []
         for bank in grp["banks"]:
             name = bank["name"]
-            if name not in seen:
-                seen[name] = fetch_peer_rates(name)
             bank_copy = dict(bank)
-            bank_copy["rates"] = seen[name]
+            bank_copy["rates"] = peer_rates.get(name, {})
             enriched.append(bank_copy)
         peer_groups[gk]["peers_with_rates"] = enriched
 
