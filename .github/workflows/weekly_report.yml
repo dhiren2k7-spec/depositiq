@@ -22,9 +22,8 @@ jobs:
       - name: Run DepositIQ
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: |
           cd src
           python main.py
