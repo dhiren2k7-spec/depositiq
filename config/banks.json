@@ -11,13 +11,13 @@
       "fdic_cert": "33766",
       "display_name": "Popular Bank",
       "rates": {
-        "checking_apy": 0.01,
-        "savings": 4.10,
-        "mma": 4.25,
-        "cd_3mo": 4.50,
-        "cd_6mo": 4.75,
-        "cd_12mo": 4.85,
-        "cd_24mo": 4.60
+        "checking_apy": 0.03,
+        "savings": null,
+        "mma": 3.25,
+        "cd_3mo": 3.85,
+        "cd_6mo": 3.95,
+        "cd_12mo": 4.05,
+        "cd_24mo": 4.15
       }
     },
     {
@@ -26,13 +26,13 @@
       "fdic_cert": "33766",
       "display_name": "Popular Direct (Online)",
       "rates": {
-        "checking_apy": 0.00,
-        "savings": 5.05,
-        "mma": 5.10,
-        "cd_3mo": 5.15,
-        "cd_6mo": 5.20,
-        "cd_12mo": 5.25,
-        "cd_24mo": 5.00
+        "checking_apy": null,
+        "savings": 3.90,
+        "mma": null,
+        "cd_3mo": 4.30,
+        "cd_6mo": 4.35,
+        "cd_12mo": 4.60,
+        "cd_24mo": 4.80
       }
     }
   ],
