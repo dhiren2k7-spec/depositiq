@@ -1,9 +1,13 @@
 import os
 import json
-import urllib.request
+import smtplib
+import ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from datetime import datetime
 
-SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
+GMAIL_APP_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]
+GMAIL_USER = "dhiren2k7@gmail.com"
 
 RATE_LABELS = {
     "checking_apy": "Checking",
@@ -66,7 +70,6 @@ def _peer_table(group_label, peers, subject_rates):
           {cells}
         </tr>"""
 
-    # Subject row at bottom (highlighted)
     subj_cells = "".join(
         f'<td style="padding:6px 10px;text-align:right;font-family:{MONO};font-size:12px;color:{ACCENT};font-weight:600;">{_pct(subject_rates.get(p))}</td>'
         for p in PRODUCTS
@@ -119,7 +122,6 @@ def build_html_email(config, report, fred_data):
     subject_banks = config["subject_banks"]
     peer_groups   = config["peer_groups"]
 
-    # ── subject rate comparison mini-table ──────────────────────────────────
     prod_hdrs = "".join(
         f'<th style="padding:6px 10px;text-align:right;color:{TEXT2};font-size:11px;">{lbl}</th>'
         for lbl in RATE_LABELS.values()
@@ -153,26 +155,21 @@ def build_html_email(config, report, fred_data):
       </div>
     </div>"""
 
-    # Use Popular Bank rates for peer comparison (primary subject)
     pb_rates = subject_banks[0]["rates"]
 
-    # ── peer group tables ────────────────────────────────────────────────────
     peer_tables = ""
     for gk in ["ny_metro", "south_florida", "direct_online"]:
         grp = peer_groups.get(gk, {})
         peers = grp.get("peers_with_rates", grp.get("banks", []))
-        # For direct_online, use Popular Direct rates
         subj_r = subject_banks[1]["rates"] if gk == "direct_online" else pb_rates
         peer_tables += _peer_table(grp.get("label", gk), peers, subj_r)
 
-    # ── AI analysis cards ────────────────────────────────────────────────────
     analysis_cards = (
         _analysis_card("New York Metro Analysis", report.get("ny_metro_analysis", {})) +
         _analysis_card("South Florida Analysis",  report.get("south_florida_analysis", {})) +
         _analysis_card("Direct / Online Analysis (Popular Direct)", report.get("direct_online_analysis", {}))
     )
 
-    # ── FRED row ─────────────────────────────────────────────────────────────
     fred_mapping = {
         "FEDFUNDS": "Fed Funds", "MMNRNNS": "Nat'l MMA",
         "CD3NAX": "Nat'l 3Mo", "CD6NAX": "Nat'l 6Mo", "CD1NAX": "Nat'l 12Mo"
@@ -271,20 +268,17 @@ def send_email(html_body, to_email, from_email, week_date=None):
     if week_date is None:
         week_date = datetime.now().strftime("%b %d, %Y")
 
-    payload = json.dumps({
-        "personalizations": [{"to": [{"email": to_email}]}],
-        "from": {"email": from_email, "name": "DepositIQ"},
-        "subject": f"DepositIQ — Popular Bank Rate Intelligence — {week_date}",
-        "content": [{"type": "text/html", "value": html_body}]
-    }).encode()
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"DepositIQ — Popular Bank Rate Intelligence — {week_date}"
+    msg["From"] = f"DepositIQ <{GMAIL_USER}>"
+    msg["To"] = to_email
 
-    req = urllib.request.Request(
-        "https://api.sendgrid.com/v3/mail/send",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {SENDGRID_API_KEY}",
-            "Content-Type": "application/json"
-        }
-    )
-    with urllib.request.urlopen(req) as resp:
-        return resp.status
+    msg.attach(MIMEText(html_body, "html"))
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+        server.sendmail(GMAIL_USER, to_email, msg.as_string())
+
+    print(f"Email sent to {to_email}")
+    return 200

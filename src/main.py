@@ -11,9 +11,7 @@ from excel_output import build_excel
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../config/banks.json")
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
-SENDGRID_API_KEY  = os.environ["SENDGRID_API_KEY"]
 FRED_API_KEY      = os.environ["FRED_API_KEY"]
-FROM_EMAIL        = os.environ.get("FROM_EMAIL", "reports@depositiq.io")
 
 def load_config():
     with open(CONFIG_PATH) as f:
@@ -48,8 +46,8 @@ def run():
 
     to_email = config["client"]["report_email"]
     print(f"  Sending email to {to_email}...")
-    status = send_email(html_body, to_email, FROM_EMAIL, week_date)
-    print(f"  SendGrid status: {status}")
+    status = send_email(html_body, to_email, None, week_date)
+    print(f"  Email status: {status}")
 
     print("  Done.")
 
