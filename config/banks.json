@@ -1,0 +1,95 @@
+{
+  "client": {
+    "name": "Popular Bank",
+    "report_email": "treasury@popularbank.com",
+    "report_label": "DepositIQ Weekly Intelligence Report"
+  },
+  "subject_banks": [
+    {
+      "id": "popular_bank",
+      "name": "Popular Bank",
+      "fdic_cert": "33766",
+      "display_name": "Popular Bank",
+      "rates": {
+        "checking_apy": 0.01,
+        "savings": 4.10,
+        "mma": 4.25,
+        "cd_3mo": 4.50,
+        "cd_6mo": 4.75,
+        "cd_12mo": 4.85,
+        "cd_24mo": 4.60
+      }
+    },
+    {
+      "id": "popular_direct",
+      "name": "Popular Direct",
+      "fdic_cert": "33766",
+      "display_name": "Popular Direct (Online)",
+      "rates": {
+        "checking_apy": 0.00,
+        "savings": 5.05,
+        "mma": 5.10,
+        "cd_3mo": 5.15,
+        "cd_6mo": 5.20,
+        "cd_12mo": 5.25,
+        "cd_24mo": 5.00
+      }
+    }
+  ],
+  "peer_groups": {
+    "ny_metro": {
+      "label": "New York Metro Peers",
+      "description": "Regional peers competing for NY/NJ/CT deposit market",
+      "banks": [
+        {"name": "Berkshire Bank",       "fdic_cert": "840",   "ticker": "BHLB"},
+        {"name": "Cathay Bank",          "fdic_cert": "18503", "ticker": "CATY"},
+        {"name": "ConnectOne Bank",      "fdic_cert": "27543", "ticker": "CNOB"},
+        {"name": "Dime Community Bank",  "fdic_cert": "619",   "ticker": "DCOM"},
+        {"name": "Flushing Bank",        "fdic_cert": "14865", "ticker": "FFIC"},
+        {"name": "OceanFirst Bank NA",   "fdic_cert": "29655", "ticker": "OCFC"},
+        {"name": "Provident Bank",       "fdic_cert": "28977", "ticker": "PVBC"},
+        {"name": "JP Morgan Chase",      "fdic_cert": "628",   "ticker": "JPM"},
+        {"name": "Flagstar Bank NA",     "fdic_cert": "32541", "ticker": "FLG"},
+        {"name": "PNC Bank",             "fdic_cert": "6384",  "ticker": "PNC"}
+      ]
+    },
+    "south_florida": {
+      "label": "South Florida Peers",
+      "description": "Regional peers competing for FL deposit market",
+      "banks": [
+        {"name": "Amerant Bank NA",      "fdic_cert": "34469", "ticker": "AMTB"},
+        {"name": "BankUnited Inc",       "fdic_cert": "58979", "ticker": "BKU"},
+        {"name": "Ocean Bank",           "fdic_cert": "19048", "ticker": null},
+        {"name": "Seacoast National Bank","fdic_cert": "10167","ticker": "SBCF"},
+        {"name": "ServisFirst Bank",     "fdic_cert": "57855", "ticker": "SFBS"},
+        {"name": "JP Morgan Chase",      "fdic_cert": "628",   "ticker": "JPM"},
+        {"name": "Wells Fargo",          "fdic_cert": "3511",  "ticker": "WFC"},
+        {"name": "Truist",               "fdic_cert": "9846",  "ticker": "TFC"}
+      ]
+    },
+    "direct_online": {
+      "label": "Direct / Online Banks",
+      "description": "National online competitors for high-yield deposits",
+      "banks": [
+        {"name": "Ally Bank",            "fdic_cert": "57803", "ticker": "ALLY"},
+        {"name": "Marcus by Goldman Sachs","fdic_cert": "2", "ticker": "GS"},
+        {"name": "Discover Bank",        "fdic_cert": "5649",  "ticker": "DFS"},
+        {"name": "American Express NB",  "fdic_cert": "27471", "ticker": "AXP"},
+        {"name": "Synchrony Bank",       "fdic_cert": "57919", "ticker": "SYF"},
+        {"name": "Barclays Bank DE",     "fdic_cert": "57203", "ticker": "BCS"},
+        {"name": "Capital One",          "fdic_cert": "33954", "ticker": "COF"},
+        {"name": "Bread Financial",      "fdic_cert": "61524", "ticker": "BFH"}
+      ]
+    }
+  },
+  "rate_products": ["checking_apy", "savings", "mma", "cd_3mo", "cd_6mo", "cd_12mo", "cd_24mo"],
+  "rate_labels": {
+    "checking_apy": "Checking APY",
+    "savings": "Savings",
+    "mma": "Money Market",
+    "cd_3mo": "3-Mo CD",
+    "cd_6mo": "6-Mo CD",
+    "cd_12mo": "12-Mo CD",
+    "cd_24mo": "24-Mo CD"
+  }
+}
