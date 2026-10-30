@@ -1,7 +1,6 @@
 import os
-import json
-import struct
-import zlib
+import zipfile
+import io
 from datetime import datetime
 
 PRODUCTS = ["checking_apy", "savings", "mma", "cd_3mo", "cd_6mo", "cd_12mo", "cd_24mo"]
@@ -58,7 +57,6 @@ def _add_peer_sheet(wb, sheet_name, peers, subj_rates, subj_name):
         row = [peer["name"]]
         for p in PRODUCTS:
             pv = rates.get(p)
-            sv = subj_rates.get(p)
             row.append(_pct(pv))
         ws.write_row(r, row)
     subj_row = [f"★ {subj_name}"] + [_pct(subj_rates.get(p)) for p in PRODUCTS]
@@ -66,9 +64,9 @@ def _add_peer_sheet(wb, sheet_name, peers, subj_rates, subj_name):
 
 
 def _add_analysis_sheet(wb, report, fred_data, week_date):
-    ws = wb.add_sheet("AI Analysis")
+    ws = wb.add_sheet("Rate Analysis")
     r = 0
-    ws.write_row(r, ["DepositIQ AI Analysis", week_date], bold=True); r += 2
+    ws.write_row(r, ["DepositIQ Rate Analysis", week_date], bold=True); r += 2
 
     ws.write_row(r, ["EXECUTIVE SUMMARY"], bold=True, bg="1C2128", fg="FB923C"); r += 1
     ws.write_row(r, [report.get("week_summary", "")]); r += 2
@@ -116,6 +114,10 @@ class _Sheet:
         self.rows[row_idx] = [_Cell(v, bold=bold, bg=bg, fg=fg) for v in values]
 
 
+def _esc(s):
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+
 class _Workbook:
     def __init__(self):
         self.sheets = []
@@ -126,10 +128,7 @@ class _Workbook:
         return ws
 
     def save(self, path):
-        parts = {}
-        rels   = []
-        sheet_entries = []
-
+        # Build shared strings table
         shared_strings = []
         ss_index = {}
 
@@ -140,15 +139,23 @@ class _Workbook:
                 shared_strings.append(s)
             return ss_index[s]
 
+        # Pre-pass to populate shared strings
+        for ws in self.sheets:
+            for r_idx in sorted(ws.rows.keys()):
+                for cell in ws.rows[r_idx]:
+                    shared(cell.value)
+
+        # Build worksheet XML parts
+        sheet_xmls = []
         for idx, ws in enumerate(self.sheets):
             sid = idx + 1
             rows_xml = ""
             for r_idx in sorted(ws.rows.keys()):
                 cells = ws.rows[r_idx]
-                row_xml = f'<row r="{r_idx+1}">'
+                row_xml = f'<row r="{r_idx + 1}">'
                 for c_idx, cell in enumerate(cells):
                     col_letter = chr(ord("A") + c_idx)
-                    cell_ref = f"{col_letter}{r_idx+1}"
+                    cell_ref = f"{col_letter}{r_idx + 1}"
                     si = shared(cell.value)
                     row_xml += f'<c r="{cell_ref}" t="s"><v>{si}</v></c>'
                 row_xml += "</row>"
@@ -160,38 +167,60 @@ class _Workbook:
                 f'<sheetData>{rows_xml}</sheetData>'
                 "</worksheet>"
             )
-            parts[f"xl/worksheets/sheet{sid}.xml"] = sheet_xml.encode()
-            sheet_entries.append((sid, ws.name))
-            rels.append(f'<Relationship Id="rId{sid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{sid}.xml"/>')
+            sheet_xmls.append((sid, ws.name, sheet_xml))
 
+        # Shared strings XML
         ss_items = "".join(f"<si><t>{_esc(s)}</t></si>" for s in shared_strings)
         ss_xml = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            f'<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="{len(shared_strings)}" uniqueCount="{len(shared_strings)}">'
+            f'<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
+            f' count="{len(shared_strings)}" uniqueCount="{len(shared_strings)}">'
             f"{ss_items}</sst>"
         )
-        parts["xl/sharedStrings.xml"] = ss_xml.encode()
-        rels.append('<Relationship Id="rIdSS" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>')
 
-        sheet_tags = "".join(f'<sheet name="{_esc(n)}" sheetId="{sid}" r:id="rId{sid}"/>' for sid, n in sheet_entries)
+        # Workbook XML
+        sheet_tags = "".join(
+            f'<sheet name="{_esc(n)}" sheetId="{sid}" r:id="rId{sid}"/>'
+            for sid, n, _ in sheet_xmls
+        )
         wb_xml = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
             'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             f"<sheets>{sheet_tags}</sheets></workbook>"
         )
-        parts["xl/workbook.xml"] = wb_xml.encode()
 
-        wb_rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + "".join(rels) + "</Relationships>"
-        parts["xl/_rels/workbook.xml.rels"] = wb_rels.encode()
-
-        ct_overrides = (
-            '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
-            '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>'
+        # Workbook relationships
+        rels = [
+            f'<Relationship Id="rId{sid}" '
+            f'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+            f'Target="worksheets/sheet{sid}.xml"/>'
+            for sid, _, _ in sheet_xmls
+        ]
+        rels.append(
+            '<Relationship Id="rIdSS" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" '
+            'Target="sharedStrings.xml"/>'
         )
-        for sid, _ in sheet_entries:
-            ct_overrides += f'<Override PartName="/xl/worksheets/sheet{sid}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        wb_rels_xml = (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            + "".join(rels)
+            + "</Relationships>"
+        )
 
+        # Content types
+        ct_overrides = (
+            '<Override PartName="/xl/workbook.xml"'
+            ' ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+            '<Override PartName="/xl/sharedStrings.xml"'
+            ' ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>'
+        )
+        for sid, _, _ in sheet_xmls:
+            ct_overrides += (
+                f'<Override PartName="/xl/worksheets/sheet{sid}.xml"'
+                f' ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+            )
         ct_xml = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
@@ -199,49 +228,23 @@ class _Workbook:
             '<Default Extension="xml" ContentType="application/xml"/>'
             f"{ct_overrides}</Types>"
         )
-        parts["[Content_Types].xml"] = ct_xml.encode()
 
-        top_rels = (
+        # Top-level relationships
+        top_rels_xml = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-            '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+            '<Relationship Id="rId1"'
+            ' Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"'
+            ' Target="xl/workbook.xml"/>'
             "</Relationships>"
         )
-        parts["_rels/.rels"] = top_rels.encode()
 
-        with open(path, "wb") as f:
-            f.write(_zip(parts))
-
-
-def _esc(s):
-    return str(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace('"',"&quot;")
-
-
-def _zip(files):
-    buf = b""
-    central = b""
-    offsets = {}
-    for name, data in files.items():
-        compressed = zlib.compress(data)[2:-4]
-        crc = zlib.crc32(data) & 0xFFFFFFFF
-        nm  = name.encode()
-        offsets[name] = len(buf)
-        local = (
-            b"PK\x03\x04"
-            + struct.pack("<HHHHIIIHHH", 20, 0, 8, 0, 0, crc, len(compressed), len(data), len(nm), 0)
-            + nm + compressed
-        )
-        buf += local
-        central += (
-            b"PK\x01\x02"
-            + struct.pack("<HHHHHIIIHHHHHHII", 20, 20, 0, 8, 0, 0, crc, len(compressed), len(data), len(nm), 0, 0, 0, 0, 0, offsets[name])
-            + nm
-        )
-    cd_offset = len(buf)
-    cd_size   = len(central)
-    n = len(files)
-    eocd = (
-        b"PK\x05\x06"
-        + struct.pack("<HHHHIIH", 0, 0, n, n, cd_size, cd_offset, 0)
-    )
-    return buf + central + eocd
+        # Write using Python's zipfile (produces valid ZIP/OOXML)
+        with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("[Content_Types].xml", ct_xml)
+            zf.writestr("_rels/.rels", top_rels_xml)
+            zf.writestr("xl/workbook.xml", wb_xml)
+            zf.writestr("xl/_rels/workbook.xml.rels", wb_rels_xml)
+            zf.writestr("xl/sharedStrings.xml", ss_xml)
+            for sid, _, sheet_xml in sheet_xmls:
+                zf.writestr(f"xl/worksheets/sheet{sid}.xml", sheet_xml)
