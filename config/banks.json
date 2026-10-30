@@ -12,7 +12,7 @@
       "display_name": "Popular Bank",
       "rates": {
         "checking_apy": 0.03,
-        "savings": null,
+        "savings": 0.10,
         "mma": 3.25,
         "cd_3mo": 3.85,
         "cd_6mo": 3.95,
