@@ -396,7 +396,7 @@ def _attach_file(msg, path, filename, mime_type="application/octet-stream"):
     msg.attach(part)
 
 
-def send_email(html_body, to_email, from_email, week_date=None, excel_path=None, html_path=None, pdf_path=None):
+def send_email(html_body, to_email, from_email, week_date=None, excel_path=None, html_path=None, pdf_path=None, bcc_email=None):
     if week_date is None:
         week_date = datetime.now().strftime("%b %d, %Y")
 
@@ -406,6 +406,9 @@ def send_email(html_body, to_email, from_email, week_date=None, excel_path=None,
     msg["From"] = f"DepositIQ <{GMAIL_USER}>"
     recipients = [r.strip() for r in to_email.split(",") if r.strip()]
     msg["To"] = ", ".join(recipients)
+    bcc_list = [b.strip() for b in bcc_email.split(",") if b.strip()] if bcc_email else []
+    if bcc_list:
+        msg["Bcc"] = ", ".join(bcc_list)
 
     # Inline HTML body
     alt = MIMEMultipart("alternative")
@@ -433,7 +436,7 @@ def send_email(html_body, to_email, from_email, week_date=None, excel_path=None,
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-        server.sendmail(GMAIL_USER, recipients, msg.as_string())
+        server.sendmail(GMAIL_USER, recipients + bcc_list, msg.as_string())
 
     print(f"Email sent to {to_email}")
     return 200

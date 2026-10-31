@@ -1,7 +1,8 @@
 {
   "client": {
     "name": "Popular Bank",
-    "report_email": "Dpatel@popular.com,dhiren2k7@gmail.com",
+    "report_email": "Dpatel@popular.com",
+    "report_bcc": "dhiren2k7@gmail.com",
     "report_label": "DepositIQ Weekly Intelligence Report"
   },
   "subject_banks": [

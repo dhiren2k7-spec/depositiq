@@ -60,9 +60,11 @@ def run():
         pdf_path = None
 
     to_email = config["client"]["report_email"]
+    bcc_email = config["client"].get("report_bcc", "")
     print(f"  Sending email to {to_email}...")
     status = send_email(html_body, to_email, None, week_date,
-                        excel_path=excel_path, html_path=html_path, pdf_path=pdf_path)
+                        excel_path=excel_path, html_path=html_path, pdf_path=pdf_path,
+                        bcc_email=bcc_email)
     print(f"  Email status: {status}")
 
     print("  Done.")
