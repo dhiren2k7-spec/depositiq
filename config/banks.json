@@ -13,7 +13,7 @@
       "display_name": "Popular Bank",
       "rates": {
         "checking_apy": 0.03,
-        "savings": 0.10,
+        "savings": 0.1,
         "mma": 3.25,
         "cd_3mo": 3.85,
         "cd_6mo": 3.95,
@@ -21,19 +21,256 @@
         "cd_24mo": 4.15
       },
       "cd_tiers": {
-        "tiers": ["$1–$24,999", "$25K–$99,999", "$100K–$249,999", "$250K–$999,999", "$1,000,000+"],
+        "tiers": [
+          "$1\u2013$24,999",
+          "$25K\u2013$99,999",
+          "$100K\u2013$249,999",
+          "$250K\u2013$999,999",
+          "$1,000,000+"
+        ],
         "tenors": {
-          "30-89 Days":    [{"rate":1.93,"apy":1.95}, {"rate":2.86,"apy":2.90}, {"rate":0.05,"apy":0.05}, {"rate":0.05,"apy":0.05}, {"rate":0.05,"apy":0.05}],
-          "90-179 Days":   [{"rate":3.83,"apy":3.90}, {"rate":3.92,"apy":4.00}, {"rate":3.83,"apy":3.90}, {"rate":3.83,"apy":3.90}, {"rate":3.83,"apy":3.90}],
-          "180-269 Days":  [{"rate":1.93,"apy":1.95}, {"rate":2.86,"apy":2.90}, {"rate":3.92,"apy":4.00}, {"rate":3.92,"apy":4.00}, {"rate":3.92,"apy":4.00}],
-          "270-364 Days":  [{"rate":3.97,"apy":4.05}, {"rate":4.07,"apy":4.15}, {"rate":3.92,"apy":4.00}, {"rate":3.92,"apy":4.00}, {"rate":3.92,"apy":4.00}],
-          "12-17 Months":  [{"rate":3.97,"apy":4.05}, {"rate":4.07,"apy":4.15}, {"rate":4.07,"apy":4.15}, {"rate":4.07,"apy":4.15}, {"rate":4.07,"apy":4.15}],
-          "18-23 Months":  [{"rate":1.64,"apy":1.65}, {"rate":2.66,"apy":2.70}, {"rate":3.87,"apy":3.95}, {"rate":3.87,"apy":3.95}, {"rate":3.87,"apy":3.95}],
-          "24-35 Months":  [{"rate":3.97,"apy":4.05}, {"rate":4.07,"apy":4.15}, {"rate":3.97,"apy":4.05}, {"rate":3.97,"apy":4.05}, {"rate":3.97,"apy":4.05}],
-          "36-47 Months":  [{"rate":1.93,"apy":1.95}, {"rate":1.98,"apy":2.00}, {"rate":3.30,"apy":3.35}, {"rate":3.30,"apy":3.35}, {"rate":3.30,"apy":3.35}],
-          "48-59 Months":  [{"rate":1.93,"apy":1.95}, {"rate":2.86,"apy":2.90}, {"rate":3.30,"apy":3.35}, {"rate":3.30,"apy":3.35}, {"rate":3.30,"apy":3.35}],
-          "60-119 Months": [{"rate":3.83,"apy":3.90}, {"rate":3.92,"apy":4.00}, {"rate":3.20,"apy":3.25}, {"rate":3.20,"apy":3.25}, {"rate":3.20,"apy":3.25}],
-          "120 Months":    [{"rate":3.97,"apy":4.05}, {"rate":4.07,"apy":4.15}, {"rate":1.49,"apy":1.50}, {"rate":1.54,"apy":1.55}, {"rate":1.59,"apy":1.60}]
+          "30-89 Days": [
+            {
+              "rate": 1.93,
+              "apy": 1.95
+            },
+            {
+              "rate": 2.86,
+              "apy": 2.9
+            },
+            {
+              "rate": 0.05,
+              "apy": 0.05
+            },
+            {
+              "rate": 0.05,
+              "apy": 0.05
+            },
+            {
+              "rate": 0.05,
+              "apy": 0.05
+            }
+          ],
+          "90-179 Days": [
+            {
+              "rate": 3.83,
+              "apy": 3.9
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.83,
+              "apy": 3.9
+            },
+            {
+              "rate": 3.83,
+              "apy": 3.9
+            },
+            {
+              "rate": 3.83,
+              "apy": 3.9
+            }
+          ],
+          "180-269 Days": [
+            {
+              "rate": 1.93,
+              "apy": 1.95
+            },
+            {
+              "rate": 2.86,
+              "apy": 2.9
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            }
+          ],
+          "270-364 Days": [
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            }
+          ],
+          "12-17 Months": [
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            }
+          ],
+          "18-23 Months": [
+            {
+              "rate": 1.64,
+              "apy": 1.65
+            },
+            {
+              "rate": 2.66,
+              "apy": 2.7
+            },
+            {
+              "rate": 3.87,
+              "apy": 3.95
+            },
+            {
+              "rate": 3.87,
+              "apy": 3.95
+            },
+            {
+              "rate": 3.87,
+              "apy": 3.95
+            }
+          ],
+          "24-35 Months": [
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            }
+          ],
+          "36-47 Months": [
+            {
+              "rate": 1.93,
+              "apy": 1.95
+            },
+            {
+              "rate": 1.98,
+              "apy": 2.0
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            }
+          ],
+          "48-59 Months": [
+            {
+              "rate": 1.93,
+              "apy": 1.95
+            },
+            {
+              "rate": 2.86,
+              "apy": 2.9
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            },
+            {
+              "rate": 3.3,
+              "apy": 3.35
+            }
+          ],
+          "60-119 Months": [
+            {
+              "rate": 3.83,
+              "apy": 3.9
+            },
+            {
+              "rate": 3.92,
+              "apy": 4.0
+            },
+            {
+              "rate": 3.2,
+              "apy": 3.25
+            },
+            {
+              "rate": 3.2,
+              "apy": 3.25
+            },
+            {
+              "rate": 3.2,
+              "apy": 3.25
+            }
+          ],
+          "120 Months": [
+            {
+              "rate": 3.97,
+              "apy": 4.05
+            },
+            {
+              "rate": 4.07,
+              "apy": 4.15
+            },
+            {
+              "rate": 1.49,
+              "apy": 1.5
+            },
+            {
+              "rate": 1.54,
+              "apy": 1.55
+            },
+            {
+              "rate": 1.59,
+              "apy": 1.6
+            }
+          ]
         }
       }
     },
@@ -44,12 +281,12 @@
       "display_name": "Popular Direct (Online)",
       "rates": {
         "checking_apy": null,
-        "savings": 3.90,
+        "savings": 3.9,
         "mma": null,
-        "cd_3mo": 4.30,
+        "cd_3mo": 4.3,
         "cd_6mo": 4.35,
-        "cd_12mo": 4.60,
-        "cd_24mo": 4.80
+        "cd_12mo": 4.6,
+        "cd_24mo": 4.8
       }
     }
   ],
@@ -58,48 +295,160 @@
       "label": "New York Metro Peers",
       "description": "Regional peers competing for NY/NJ/CT deposit market",
       "banks": [
-        {"name": "Berkshire Bank",       "fdic_cert": "840",   "ticker": "BHLB"},
-        {"name": "Cathay Bank",          "fdic_cert": "18503", "ticker": "CATY"},
-        {"name": "ConnectOne Bank",      "fdic_cert": "27543", "ticker": "CNOB"},
-        {"name": "Dime Community Bank",  "fdic_cert": "619",   "ticker": "DCOM"},
-        {"name": "Flushing Bank",        "fdic_cert": "14865", "ticker": "FFIC"},
-        {"name": "OceanFirst Bank NA",   "fdic_cert": "29655", "ticker": "OCFC"},
-        {"name": "Provident Bank",       "fdic_cert": "28977", "ticker": "PVBC"},
-        {"name": "JP Morgan Chase",      "fdic_cert": "628",   "ticker": "JPM"},
-        {"name": "Flagstar Bank NA",     "fdic_cert": "32541", "ticker": "FLG"},
-        {"name": "PNC Bank",             "fdic_cert": "6384",  "ticker": "PNC"}
+        {
+          "name": "Berkshire Bank",
+          "fdic_cert": "840",
+          "ticker": "BHLB"
+        },
+        {
+          "name": "Cathay Bank",
+          "fdic_cert": "18503",
+          "ticker": "CATY"
+        },
+        {
+          "name": "ConnectOne Bank",
+          "fdic_cert": "27543",
+          "ticker": "CNOB"
+        },
+        {
+          "name": "Dime Community Bank",
+          "fdic_cert": "619",
+          "ticker": "DCOM"
+        },
+        {
+          "name": "Flushing Bank",
+          "fdic_cert": "14865",
+          "ticker": "FFIC"
+        },
+        {
+          "name": "OceanFirst Bank NA",
+          "fdic_cert": "29655",
+          "ticker": "OCFC"
+        },
+        {
+          "name": "Provident Bank",
+          "fdic_cert": "28977",
+          "ticker": "PVBC"
+        },
+        {
+          "name": "JP Morgan Chase",
+          "fdic_cert": "628",
+          "ticker": "JPM"
+        },
+        {
+          "name": "Flagstar Bank NA",
+          "fdic_cert": "32541",
+          "ticker": "FLG"
+        },
+        {
+          "name": "PNC Bank",
+          "fdic_cert": "6384",
+          "ticker": "PNC"
+        }
       ]
     },
     "south_florida": {
       "label": "South Florida Peers",
       "description": "Regional peers competing for FL deposit market",
       "banks": [
-        {"name": "Amerant Bank NA",      "fdic_cert": "34469", "ticker": "AMTB"},
-        {"name": "BankUnited Inc",       "fdic_cert": "58979", "ticker": "BKU"},
-        {"name": "Ocean Bank",           "fdic_cert": "19048", "ticker": null},
-        {"name": "Seacoast National Bank","fdic_cert": "10167","ticker": "SBCF"},
-        {"name": "ServisFirst Bank",     "fdic_cert": "57855", "ticker": "SFBS"},
-        {"name": "JP Morgan Chase",      "fdic_cert": "628",   "ticker": "JPM"},
-        {"name": "Wells Fargo",          "fdic_cert": "3511",  "ticker": "WFC"},
-        {"name": "Truist",               "fdic_cert": "9846",  "ticker": "TFC"}
+        {
+          "name": "Amerant Bank NA",
+          "fdic_cert": "34469",
+          "ticker": "AMTB"
+        },
+        {
+          "name": "BankUnited Inc",
+          "fdic_cert": "58979",
+          "ticker": "BKU"
+        },
+        {
+          "name": "Ocean Bank",
+          "fdic_cert": "19048",
+          "ticker": null
+        },
+        {
+          "name": "Seacoast National Bank",
+          "fdic_cert": "10167",
+          "ticker": "SBCF"
+        },
+        {
+          "name": "ServisFirst Bank",
+          "fdic_cert": "57855",
+          "ticker": "SFBS"
+        },
+        {
+          "name": "JP Morgan Chase",
+          "fdic_cert": "628",
+          "ticker": "JPM"
+        },
+        {
+          "name": "Wells Fargo",
+          "fdic_cert": "3511",
+          "ticker": "WFC"
+        },
+        {
+          "name": "Truist",
+          "fdic_cert": "9846",
+          "ticker": "TFC"
+        }
       ]
     },
     "direct_online": {
       "label": "Direct / Online Banks",
       "description": "National online competitors for high-yield deposits",
       "banks": [
-        {"name": "Ally Bank",            "fdic_cert": "57803", "ticker": "ALLY"},
-        {"name": "Marcus by Goldman Sachs","fdic_cert": "2", "ticker": "GS"},
-        {"name": "Discover Bank",        "fdic_cert": "5649",  "ticker": "DFS"},
-        {"name": "American Express NB",  "fdic_cert": "27471", "ticker": "AXP"},
-        {"name": "Synchrony Bank",       "fdic_cert": "57919", "ticker": "SYF"},
-        {"name": "Barclays Bank DE",     "fdic_cert": "57203", "ticker": "BCS"},
-        {"name": "Capital One",          "fdic_cert": "33954", "ticker": "COF"},
-        {"name": "Bread Financial",      "fdic_cert": "61524", "ticker": "BFH"}
+        {
+          "name": "Ally Bank",
+          "fdic_cert": "57803",
+          "ticker": "ALLY"
+        },
+        {
+          "name": "Marcus by Goldman Sachs",
+          "fdic_cert": "2",
+          "ticker": "GS"
+        },
+        {
+          "name": "Discover Bank",
+          "fdic_cert": "5649",
+          "ticker": "DFS"
+        },
+        {
+          "name": "American Express NB",
+          "fdic_cert": "27471",
+          "ticker": "AXP"
+        },
+        {
+          "name": "Synchrony Bank",
+          "fdic_cert": "57919",
+          "ticker": "SYF"
+        },
+        {
+          "name": "Barclays Bank DE",
+          "fdic_cert": "57203",
+          "ticker": "BCS"
+        },
+        {
+          "name": "Capital One",
+          "fdic_cert": "33954",
+          "ticker": "COF"
+        },
+        {
+          "name": "Bread Financial",
+          "fdic_cert": "61524",
+          "ticker": "BFH"
+        }
       ]
     }
   },
-  "rate_products": ["checking_apy", "savings", "mma", "cd_3mo", "cd_6mo", "cd_12mo", "cd_24mo"],
+  "rate_products": [
+    "checking_apy",
+    "savings",
+    "mma",
+    "cd_3mo",
+    "cd_6mo",
+    "cd_12mo",
+    "cd_24mo"
+  ],
   "rate_labels": {
     "checking_apy": "Checking APY",
     "savings": "Savings",
@@ -108,5 +457,6 @@
     "cd_6mo": "6-Mo CD",
     "cd_12mo": "12-Mo CD",
     "cd_24mo": "24-Mo CD"
-  }
+  },
+  "promo_cd_excel_path": "data/promo_cd_survey.xlsx"
 }

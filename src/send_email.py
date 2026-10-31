@@ -386,6 +386,187 @@ def _cd_tier_table(cd_tiers):
     </div>"""
 
 
+NYM_COLOR = "#38bdf8"
+SFL_COLOR = "#4ade80"
+
+_PROMO_REGION_MAP = {
+    # NYM
+    "Beacon Bank - Berkshire & Capital Region": "NYM",
+    "ConnectOne Bank":                          "NYM",
+    "Dime Community Bank":                      "NYM",
+    "Flagstar Bank":                            "NYM",
+    "OceanFirst Bank":                          "NYM",
+    "Provident Bank":                           "NYM",
+    "Chase - Downstate":                        "NYM",
+    "PNC Bank - Manhattan":                     "NYM",
+    # SFL
+    "Amerant Bank":                             "SFL",
+    "BankUnited":                               "SFL",
+    "Ocean Bank":                               "SFL",
+    "Seacoast National Bank":                   "SFL",
+    "ServisFirst Bank":                         "SFL",
+    "Chase - Florida":                          "SFL",
+    "Wells Fargo Bank - South Florida":         "SFL",
+    "Truist":                                   "SFL",
+}
+
+
+def _promo_cd_table(excel_path):
+    """Build Promo CD rate comparison table from Excel survey data.
+    Rows = banks (NYM section on top, SFL below, Popular Bank pinned last in each section).
+    Columns = all unique promo tenors across peer banks + Popular Bank.
+    Cells = APY. Popular Bank row in ACCENT orange.
+    """
+    try:
+        import openpyxl
+        from collections import defaultdict
+    except ImportError:
+        return ""
+
+    try:
+        wb = openpyxl.load_workbook(excel_path)
+        ws = wb.active
+        rows = [r for r in ws.iter_rows(values_only=True) if any(c is not None for c in r)]
+    except Exception:
+        return ""
+
+    # Filter to CD Special rows only
+    cd_rows = [r for r in rows[2:] if r[2] == "CD" and r[3] == "Special"]
+
+    # Peer banks: best APY per (bank, tenor)
+    bank_tenor_apy = defaultdict(lambda: defaultdict(list))
+    pb_tenor_tiers = defaultdict(list)  # tenor -> list of (min_bal, apy)
+
+    for r in cd_rows:
+        bank  = r[0]
+        tenor = r[4]   # min_term months
+        apy   = r[9]
+        if apy is None:
+            continue
+        if bank == "Popular Bank":
+            pb_tenor_tiers[tenor].append((r[6], apy))  # (min_bal, apy)
+        else:
+            bank_tenor_apy[bank][tenor].append(apy)
+
+    # Best peer APY per bank/tenor
+    bank_best = {b: {t: max(v) for t, v in td.items()} for b, td in bank_tenor_apy.items()}
+
+    # Popular Bank Tier 1 (min_bal=1000) APY per tenor
+    pb_tier1 = {}
+    for tenor, vals in pb_tenor_tiers.items():
+        t1 = [a for (mb, a) in vals if mb == 1000]
+        if t1:
+            pb_tier1[tenor] = t1[0]
+
+    # All unique tenors: peer tenors UNION PB tenors, sorted
+    all_tenors = sorted(
+        set(t for b in bank_best.values() for t in b.keys()) | set(pb_tier1.keys())
+    )
+
+    if not all_tenors:
+        return ""
+
+    # Bucket banks by region
+    nym_banks = [b for b in sorted(bank_best) if _PROMO_REGION_MAP.get(b) == "NYM"]
+    sfl_banks = [b for b in sorted(bank_best) if _PROMO_REGION_MAP.get(b) == "SFL"]
+
+    # Short name helper (strip long suffixes)
+    def _short(name):
+        return (name.replace("Bank - Berkshire & Capital Region", "Bank - Berkshire")
+                    .replace("Wells Fargo Bank - South Florida", "Wells Fargo SFL")
+                    .replace("PNC Bank - Manhattan", "PNC - Manhattan")
+                    .replace("Chase - Downstate", "Chase Downstate")
+                    .replace("Chase - Florida", "Chase Florida"))
+
+    # --- Build header row (tenor columns) ---
+    tenor_hdrs = "".join(
+        f'<th style="padding:5px 7px;text-align:right;color:{TEXT2};font-size:10px;'
+        f'white-space:nowrap;border-left:1px solid {BORDER};">{t}mo</th>'
+        for t in all_tenors
+    )
+
+    # --- Build a data row ---
+    def _row(bank_name, apy_dict, bg, is_pb=False):
+        name_color = ACCENT if is_pb else TEXT
+        name_weight = "700" if is_pb else "400"
+        star = "★ " if is_pb else ""
+        cells = ""
+        for t in all_tenors:
+            val = apy_dict.get(t)
+            if val is None:
+                cell_txt = "—"
+                cell_color = TEXT2
+            else:
+                cell_txt = f"{val:.2f}%"
+                cell_color = ACCENT if is_pb else TEXT
+            cells += (
+                f'<td style="padding:5px 7px;text-align:right;font-family:{MONO};'
+                f'font-size:11px;color:{cell_color};border-left:1px solid {BORDER};">'
+                f'{cell_txt}</td>'
+            )
+        return (
+            f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">'
+            f'<td style="padding:5px 8px;font-size:11px;color:{name_color};'
+            f'font-weight:{name_weight};white-space:nowrap;">{star}{_short(bank_name)}</td>'
+            f'{cells}</tr>'
+        )
+
+    # --- Build section header spanning all cols ---
+    def _section_hdr(label, color):
+        col_count = len(all_tenors) + 1
+        return (
+            f'<tr><td colspan="{col_count}" style="background:{color}22;'
+            f'padding:5px 10px;font-size:10px;font-weight:700;color:{color};'
+            f'letter-spacing:.06em;border-top:2px solid {color};">{label}</td></tr>'
+        )
+
+    # Build rows
+    tbody = ""
+
+    # NYM section
+    if nym_banks:
+        tbody += _section_hdr("NY METRO", NYM_COLOR)
+        for i, b in enumerate(nym_banks):
+            bg = CARD if i % 2 == 0 else SURFACE
+            tbody += _row(b, bank_best[b], bg)
+        # PB as last row of NYM section
+        tbody += _row("Popular Bank", pb_tier1, SURFACE, is_pb=True)
+
+    # SFL section
+    if sfl_banks:
+        tbody += _section_hdr("SOUTH FLORIDA", SFL_COLOR)
+        for i, b in enumerate(sfl_banks):
+            bg = CARD if i % 2 == 0 else SURFACE
+            tbody += _row(b, bank_best[b], bg)
+        # PB as last row of SFL section too
+        tbody += _row("Popular Bank", pb_tier1, SURFACE, is_pb=True)
+
+    col_count = len(all_tenors) + 1
+
+    return f"""
+    <div style="margin-bottom:32px;">
+      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;
+           letter-spacing:.08em;margin-bottom:4px;">Promotional CD Rate Comparison — NY Metro &amp; South Florida</div>
+      <div style="font-size:11px;color:{TEXT2};margin-bottom:8px;">
+        Best available APY per tenor · Peer banks show highest APY across all balance tiers ·
+        ★ Popular Bank shows Tier 1 ($1K–$25K) APY · Survey as of 10/26/2026
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="border-collapse:collapse;background:{CARD};border-radius:6px;
+               overflow:hidden;font-size:11px;min-width:100%;">
+          <thead>
+            <tr style="background:{SURFACE};border-bottom:2px solid {BORDER};">
+              <th style="padding:6px 10px;text-align:left;color:{TEXT2};font-size:10px;
+                  white-space:nowrap;">Institution</th>
+              {tenor_hdrs}
+            </tr>
+          </thead>
+          <tbody>{tbody}</tbody>
+        </table>
+      </div>
+    </div>"""
+
+
 def build_html_email(config, report, fred_data):
     now = datetime.now().strftime("%B %d, %Y")
     subject_banks = config["subject_banks"]
@@ -426,6 +607,8 @@ def build_html_email(config, report, fred_data):
 
     pb_cd_tiers = subject_banks[0].get("cd_tiers")
     pb_rates = subject_banks[0]["rates"]
+    promo_excel = config.get("promo_cd_excel_path", "")
+
 
     ny_grp  = peer_groups.get("ny_metro", {})
     sfl_grp = peer_groups.get("south_florida", {})
@@ -497,6 +680,9 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 
   <!-- Unified CD Tenor & Tier Table (NYM + SFL + Popular Bank) -->
   {_unified_cd_table(ny_grp, sfl_grp, pb_cd_tiers) if pb_cd_tiers else ''}
+
+  <!-- Promotional CD Rate Comparison -->
+  {_promo_cd_table(promo_excel) if promo_excel else ''}
 
   <!-- Peer Tables -->
   {peer_tables}
