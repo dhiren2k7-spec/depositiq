@@ -32,6 +32,13 @@ def run():
     config_with_rates = dict(config)
     config_with_rates["peer_groups"] = peer_groups
 
+    # Resolve promo excel path relative to config file so it works from any CWD
+    _config_dir = os.path.dirname(os.path.abspath(CONFIG_PATH))
+    if config_with_rates.get("promo_cd_excel_path"):
+        config_with_rates["promo_cd_excel_path"] = os.path.join(
+            _config_dir, "..", config_with_rates["promo_cd_excel_path"]
+        )
+
     subject_banks = config["subject_banks"]
 
     print("  Generating AI report...")

@@ -417,6 +417,9 @@ def _promo_cd_table(excel_path):
     Columns = all unique promo tenors across peer banks + Popular Bank.
     Cells = APY. Popular Bank row in ACCENT orange.
     """
+    if not excel_path or not os.path.exists(excel_path):
+        print(f"  [promo] Excel not found at: {excel_path!r} — skipping promo table")
+        return ""
     try:
         import openpyxl
         from collections import defaultdict
