@@ -22,7 +22,7 @@ def build_excel(config, report, fred_data, week_date):
     group_order = [
         ("ny_metro",      "NY Metro"),
         ("south_florida", "South Florida"),
-        ("direct_online", "Direct Online"),
+        ("direct_online", "Popular Direct"),
     ]
     pb_rates  = config["subject_banks"][0]["rates"]
     pd_rates  = config["subject_banks"][1]["rates"]
@@ -81,14 +81,14 @@ def _add_analysis_sheet(wb, report, fred_data, week_date):
     for key, label in [
         ("ny_metro_analysis",      "NY Metro Analysis"),
         ("south_florida_analysis", "South Florida Analysis"),
-        ("direct_online_analysis", "Direct / Online Analysis"),
+        ("direct_online_analysis", "Popular Direct — Key Takeaways"),
     ]:
         ana = report.get(key, {})
         ws.write_row(r, [label], bold=True, bg="1C2128", fg="FB923C"); r += 1
         ws.write_row(r, ["Position:", ana.get("position", "")]); r += 1
         ws.write_row(r, ["Recommendation:", ana.get("recommendation", "")]); r += 1
-        for g in ana.get("gaps", []):
-            ws.write_row(r, ["  Gap:", g]); r += 1
+        for g in (ana.get("gaps", []) or ana.get("takeaways", [])):
+            ws.write_row(r, ["  Takeaway:", g]); r += 1
         r += 1
 
     ws.write_row(r, ["RISK LEVEL:", report.get("risk_level",""), report.get("risk_rationale","")], bold=True); r += 2
