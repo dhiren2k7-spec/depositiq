@@ -9,37 +9,37 @@
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.05,
-    "cd_3mo": 3.250,
-    "cd_6mo": 4.200,
-    "cd_12mo": 4.400,
-    "cd_24mo": 4.350
+    "cd_3mo": 3.25,
+    "cd_6mo": 4.2,
+    "cd_12mo": 4.4,
+    "cd_24mo": 4.35
   },
   "Berkshire Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
-    "mma": 0.10,
-    "cd_3mo": 0.050,
-    "cd_6mo": 3.900,
-    "cd_12mo": 3.350,
-    "cd_24mo": 4.100
+    "mma": 0.1,
+    "cd_3mo": 0.05,
+    "cd_6mo": 3.9,
+    "cd_12mo": 3.35,
+    "cd_24mo": 4.1
   },
   "ConnectOne Bank": {
     "checking_apy": 0.05,
-    "savings": 0.10,
-    "mma": 0.50,
-    "cd_3mo": 1.850,
-    "cd_6mo": 3.750,
-    "cd_12mo": 3.200,
-    "cd_24mo": 2.750
+    "savings": 0.1,
+    "mma": 0.5,
+    "cd_3mo": 1.85,
+    "cd_6mo": 3.75,
+    "cd_12mo": 3.2,
+    "cd_24mo": 2.75
   },
   "Dime Community Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
     "mma": 0.15,
-    "cd_3mo": 0.010,
-    "cd_6mo": 3.500,
-    "cd_12mo": 3.050,
-    "cd_24mo": 2.750
+    "cd_3mo": 0.01,
+    "cd_6mo": 3.5,
+    "cd_12mo": 3.05,
+    "cd_24mo": 2.75
   },
   "OceanFirst Bank NA": {
     "checking_apy": 0.01,
@@ -47,178 +47,218 @@
     "mma": 0.15,
     "cd_3mo": null,
     "cd_6mo": 4.022,
-    "cd_12mo": 3.950,
+    "cd_12mo": 3.95,
     "cd_24mo": null
   },
   "Provident Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
-    "mma": 0.20,
-    "cd_3mo": 3.500,
-    "cd_6mo": 0.500,
-    "cd_12mo": 0.750,
-    "cd_24mo": 3.250
+    "mma": 0.2,
+    "cd_3mo": 3.5,
+    "cd_6mo": 0.5,
+    "cd_12mo": 0.75,
+    "cd_24mo": 3.25
   },
   "Amerant Bank NA": {
     "checking_apy": 0.05,
-    "savings": 0.10,
-    "mma": 0.50,
-    "cd_3mo": 3.000,
-    "cd_6mo": 4.150,
-    "cd_12mo": 4.250,
-    "cd_24mo": 4.750
+    "savings": 0.1,
+    "mma": 0.5,
+    "cd_3mo": 3.0,
+    "cd_6mo": 4.15,
+    "cd_12mo": 4.25,
+    "cd_24mo": 4.75
   },
   "BankUnited Inc": {
     "checking_apy": 0.01,
     "savings": 0.05,
-    "mma": 3.50,
-    "cd_3mo": 0.050,
-    "cd_6mo": 3.850,
-    "cd_12mo": 4.100,
-    "cd_24mo": 0.100
+    "mma": 3.5,
+    "cd_3mo": 0.05,
+    "cd_6mo": 3.85,
+    "cd_12mo": 4.1,
+    "cd_24mo": 0.1
   },
   "Ocean Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
-    "mma": 0.10,
-    "cd_3mo": 3.750,
-    "cd_6mo": 3.500,
+    "mma": 0.1,
+    "cd_3mo": 3.75,
+    "cd_6mo": 3.5,
     "cd_12mo": 1.502,
-    "cd_24mo": 1.500
+    "cd_24mo": 1.5
   },
   "Seacoast National Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
-    "mma": 0.20,
-    "cd_3mo": 3.250,
-    "cd_6mo": 3.500,
-    "cd_12mo": 3.750,
-    "cd_24mo": 2.500
+    "mma": 0.2,
+    "cd_3mo": 3.25,
+    "cd_6mo": 3.5,
+    "cd_12mo": 3.75,
+    "cd_24mo": 2.5
   },
   "ServisFirst Bank": {
     "checking_apy": 0.05,
-    "savings": 0.10,
-    "mma": 1.00,
-    "cd_3mo": 3.000,
-    "cd_6mo": 3.500,
-    "cd_12mo": 3.490,
-    "cd_24mo": 2.500
+    "savings": 0.1,
+    "mma": 1.0,
+    "cd_3mo": 3.0,
+    "cd_6mo": 3.5,
+    "cd_12mo": 3.49,
+    "cd_24mo": 2.5
   },
   "Wells Fargo": {
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.01,
-    "cd_3mo": 0.060,
-    "cd_6mo": 3.500,
-    "cd_12mo": 4.250,
-    "cd_24mo": 2.270
+    "cd_3mo": 0.06,
+    "cd_6mo": 3.5,
+    "cd_12mo": 4.25,
+    "cd_24mo": 2.27
   },
   "JP Morgan Chase": {
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.01,
-    "cd_3mo": 3.450,
-    "cd_6mo": 3.350,
-    "cd_12mo": 2.950,
-    "cd_24mo": 2.850
+    "cd_3mo": 3.45,
+    "cd_6mo": 3.35,
+    "cd_12mo": 2.95,
+    "cd_24mo": 2.85
   },
   "Truist": {
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.05,
-    "cd_3mo": 0.050,
-    "cd_6mo": 3.500,
-    "cd_12mo": 3.400,
-    "cd_24mo": 2.900
+    "cd_3mo": 0.05,
+    "cd_6mo": 3.5,
+    "cd_12mo": 3.4,
+    "cd_24mo": 2.9
   },
   "PNC Bank": {
     "checking_apy": 0.01,
     "savings": 0.01,
     "mma": 0.03,
-    "cd_3mo": 0.030,
-    "cd_6mo": 3.500,
-    "cd_12mo": 0.030,
-    "cd_24mo": 2.500
+    "cd_3mo": 0.03,
+    "cd_6mo": 3.5,
+    "cd_12mo": 0.03,
+    "cd_24mo": 2.5
   },
   "Cathay Bank": {
     "checking_apy": 0.01,
     "savings": 0.05,
     "mma": 0.25,
-    "cd_3mo": 0.250,
-    "cd_6mo": 0.250,
-    "cd_12mo": 0.400,
-    "cd_24mo": 0.500
+    "cd_3mo": 0.25,
+    "cd_6mo": 0.25,
+    "cd_12mo": 0.4,
+    "cd_24mo": 0.5
   },
   "Ally Bank": {
     "checking_apy": null,
-    "savings": 4.00,
-    "mma": 4.00,
+    "savings": 4.0,
+    "mma": 4.0,
     "cd_3mo": 4.25,
     "cd_6mo": 4.35,
-    "cd_12mo": 4.50,
-    "cd_24mo": 4.25
+    "cd_12mo": 4.5,
+    "cd_24mo": 4.25,
+    "cd_9mo": 4.4,
+    "cd_18mo": 4.3,
+    "cd_36mo": 4.1,
+    "cd_48mo": 3.9,
+    "cd_60mo": 3.75
   },
   "Marcus by Goldman Sachs": {
     "checking_apy": null,
-    "savings": 4.10,
+    "savings": 4.1,
     "mma": null,
-    "cd_3mo": 4.20,
-    "cd_6mo": 4.30,
-    "cd_12mo": 4.50,
-    "cd_24mo": 4.30
+    "cd_3mo": 4.2,
+    "cd_6mo": 4.3,
+    "cd_12mo": 4.5,
+    "cd_24mo": 4.3,
+    "cd_9mo": 4.35,
+    "cd_18mo": 4.25,
+    "cd_36mo": 4.05,
+    "cd_48mo": 3.85,
+    "cd_60mo": 3.7
   },
   "Discover Bank": {
     "checking_apy": null,
-    "savings": 4.00,
+    "savings": 4.0,
     "mma": null,
-    "cd_3mo": 4.10,
+    "cd_3mo": 4.1,
     "cd_6mo": 4.25,
-    "cd_12mo": 4.40,
-    "cd_24mo": 4.20
+    "cd_12mo": 4.4,
+    "cd_24mo": 4.2,
+    "cd_9mo": 4.3,
+    "cd_18mo": 4.15,
+    "cd_36mo": 3.95,
+    "cd_48mo": 3.8,
+    "cd_60mo": 3.65
   },
   "American Express NB": {
     "checking_apy": null,
-    "savings": 3.90,
+    "savings": 3.9,
     "mma": null,
-    "cd_3mo": 4.00,
+    "cd_3mo": 4.0,
     "cd_6mo": 4.15,
     "cd_12mo": 4.35,
-    "cd_24mo": 4.15
+    "cd_24mo": 4.15,
+    "cd_9mo": 4.25,
+    "cd_18mo": 4.1,
+    "cd_36mo": 3.9,
+    "cd_48mo": 3.75,
+    "cd_60mo": 3.6
   },
   "Synchrony Bank": {
     "checking_apy": null,
-    "savings": 4.50,
+    "savings": 4.5,
     "mma": null,
-    "cd_3mo": 4.30,
+    "cd_3mo": 4.3,
     "cd_6mo": 4.45,
-    "cd_12mo": 4.60,
-    "cd_24mo": 4.40
+    "cd_12mo": 4.6,
+    "cd_24mo": 4.4,
+    "cd_9mo": 4.55,
+    "cd_18mo": 4.4,
+    "cd_36mo": 4.2,
+    "cd_48mo": 4.0,
+    "cd_60mo": 3.85
   },
   "Barclays Bank DE": {
     "checking_apy": null,
     "savings": 4.35,
     "mma": null,
-    "cd_3mo": 4.20,
+    "cd_3mo": 4.2,
     "cd_6mo": 4.35,
-    "cd_12mo": 4.50,
-    "cd_24mo": 4.30
+    "cd_12mo": 4.5,
+    "cd_24mo": 4.3,
+    "cd_9mo": 4.4,
+    "cd_18mo": 4.25,
+    "cd_36mo": 4.05,
+    "cd_48mo": 3.85,
+    "cd_60mo": 3.7
   },
   "Capital One": {
-    "checking_apy": 0.10,
-    "savings": 3.80,
+    "checking_apy": 0.1,
+    "savings": 3.8,
     "mma": null,
-    "cd_3mo": 4.00,
+    "cd_3mo": 4.0,
     "cd_6mo": 4.15,
-    "cd_12mo": 4.30,
-    "cd_24mo": 4.10
+    "cd_12mo": 4.3,
+    "cd_24mo": 4.1,
+    "cd_9mo": 4.2,
+    "cd_18mo": 4.05,
+    "cd_36mo": 3.85,
+    "cd_48mo": 3.65,
+    "cd_60mo": 3.5
   },
   "Bread Financial": {
     "checking_apy": null,
-    "savings": 4.40,
+    "savings": 4.4,
     "mma": null,
     "cd_3mo": 4.25,
-    "cd_6mo": 4.40,
+    "cd_6mo": 4.4,
     "cd_12mo": 4.55,
-    "cd_24mo": 4.35
+    "cd_24mo": 4.35,
+    "cd_9mo": 4.5,
+    "cd_18mo": 4.35,
+    "cd_36mo": 4.15,
+    "cd_48mo": 3.95,
+    "cd_60mo": 3.8
   }
 }

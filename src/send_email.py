@@ -23,6 +23,25 @@ RATE_LABELS = {
 
 PRODUCTS = list(RATE_LABELS.keys())
 
+# Extended label set for Direct/Online Banks — includes additional CD tenors
+# not tracked for regional peers (NYM/SFL)
+DO_RATE_LABELS = {
+    "checking_apy": "Checking",
+    "savings":      "Savings",
+    "mma":          "MMA",
+    "cd_3mo":       "3Mo CD",
+    "cd_6mo":       "6Mo CD",
+    "cd_9mo":       "9Mo CD",
+    "cd_12mo":      "12Mo CD",
+    "cd_18mo":      "18Mo CD",
+    "cd_24mo":      "24Mo CD",
+    "cd_36mo":      "3Yr CD",
+    "cd_48mo":      "4Yr CD",
+    "cd_60mo":      "5Yr CD",
+}
+
+DO_PRODUCTS = list(DO_RATE_LABELS.keys())
+
 # Bloomberg dark theme palette
 BG       = "#0d1117"
 SURFACE  = "#161b22"
@@ -58,16 +77,19 @@ def _rate_td(val, compare=None):
 def _region_badge(label, color):
     return f'<span style="display:inline-block;background:{color};color:#000;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
 
-def _peer_table(group_label, peers, subject_rates):
+def _peer_table(group_label, peers, subject_rates, rate_labels=None):
+    if rate_labels is None:
+        rate_labels = RATE_LABELS
+    products = list(rate_labels.keys())
     prod_headers = "".join(
         f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:10px;white-space:nowrap;">{lbl}</th>'
-        for lbl in RATE_LABELS.values()
+        for lbl in rate_labels.values()
     )
     rows = ""
     for peer in peers:
         r = peer.get("rates", {})
         cells = "".join(
-            _rate_td(r.get(p), subject_rates.get(p)) for p in PRODUCTS
+            _rate_td(r.get(p), subject_rates.get(p)) for p in products
         )
         rows += f"""
         <tr style="border-bottom:1px solid {BORDER};">
@@ -77,7 +99,7 @@ def _peer_table(group_label, peers, subject_rates):
 
     subj_cells = "".join(
         f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:11px;color:{ACCENT};font-weight:700;">{_pct(subject_rates.get(p))}</td>'
-        for p in PRODUCTS
+        for p in products
     )
 
     return f"""
@@ -540,7 +562,7 @@ def build_html_email(config, report, fred_data):
     do_peers = do_grp.get("peers_with_rates", do_grp.get("banks", []))
 
     peer_tables = (
-        _peer_table(do_grp.get("label", "Direct / Online Banks"), do_peers, subject_banks[1]["rates"])
+        _peer_table(do_grp.get("label", "Direct / Online Banks"), do_peers, subject_banks[1]["rates"], DO_RATE_LABELS)
     )
 
     analysis_cards = (
