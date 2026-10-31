@@ -108,10 +108,7 @@ def _analysis_card(title, analysis):
     <div style="background:{CARD};border-left:3px solid {ACCENT};border-radius:4px;padding:16px;margin-bottom:16px;">
       <div style="font-size:12px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">{title}</div>
       <p style="margin:0 0 8px;color:{TEXT};font-size:13px;">{analysis.get('position','')}</p>
-      <ul style="margin:0 0 8px;padding-left:18px;font-size:12px;">{gaps}</ul>
-      <div style="background:{SURFACE};border-radius:4px;padding:10px;font-size:12px;color:{GREEN};">
-        <strong>→ Recommendation:</strong> {analysis.get('recommendation','')}
-      </div>
+      <ul style="margin:0;padding-left:18px;font-size:12px;">{gaps}</ul>
     </div>"""
 
 def _risk_badge(risk_level):
@@ -237,9 +234,13 @@ def build_html_email(config, report, fred_data):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DepositIQ — Popular Bank — {now}</title>
+<style>
+@page {{ size: A4 landscape; margin: 10mm; }}
+body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }}
+</style>
 </head>
-<body style="margin:0;padding:0;background:{BG};font-family:{FONT};color:{TEXT};">
-<div style="max-width:860px;margin:0 auto;padding:24px 16px;">
+<body style="margin:0;padding:0;background:{BG};font-family:{FONT};color:{TEXT};-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;">
+<div style="max-width:1200px;margin:0 auto;padding:24px 16px;">
 
   <!-- Header -->
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
@@ -254,18 +255,6 @@ def build_html_email(config, report, fred_data):
       </td>
     </tr>
   </table>
-
-  <!-- Week Summary -->
-  <div style="background:{CARD};border-left:4px solid {ACCENT};border-radius:6px;padding:16px;margin-bottom:24px;">
-    <div style="font-size:11px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Executive Summary</div>
-    <p style="margin:0;font-size:14px;line-height:1.6;color:{TEXT};">{report.get('week_summary','')}</p>
-  </div>
-
-  <!-- Top Priority Banner -->
-  <div style="background:{SURFACE};border:1px solid {ACCENT};border-radius:6px;padding:14px 16px;margin-bottom:24px;">
-    <span style="font-size:11px;font-weight:700;color:{ACCENT};text-transform:uppercase;letter-spacing:.07em;">⚡ TOP PRIORITY THIS WEEK</span>
-    <p style="margin:6px 0 0;font-size:13px;color:{TEXT};">{report.get('top_priority','')}</p>
-  </div>
 
   <!-- National Benchmarks -->
   <div style="margin-bottom:24px;">
@@ -286,21 +275,8 @@ def build_html_email(config, report, fred_data):
 
   <!-- Rate Analysis Cards -->
   <div style="margin-bottom:24px;">
-    <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Regional Analysis & Recommendations</div>
+    <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Regional Rate Analysis — Key Takeaways</div>
     {analysis_cards}
-  </div>
-
-  <!-- Risk + Next Watch -->
-  <div style="display:flex;gap:16px;margin-bottom:24px;">
-    <div style="flex:1;background:{CARD};border-radius:6px;padding:16px;">
-      <div style="font-size:11px;font-weight:600;color:{TEXT2};text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Risk Assessment</div>
-      <div style="margin-bottom:6px;">{_risk_badge(risk_level)}</div>
-      <p style="margin:0;font-size:12px;color:{TEXT2};">{report.get('risk_rationale','')}</p>
-    </div>
-    <div style="flex:1;background:{CARD};border-radius:6px;padding:16px;">
-      <div style="font-size:11px;font-weight:600;color:{TEXT2};text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Watch Next Week</div>
-      <p style="margin:0;font-size:12px;color:{TEXT};">{report.get('next_watch','')}</p>
-    </div>
   </div>
 
   <!-- Footer -->
