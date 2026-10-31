@@ -55,9 +55,91 @@ def _rate_td(val, compare=None):
     color = _rate_color(val, compare) if compare is not None else TEXT
     return f'<td style="padding:6px 10px;text-align:right;font-family:{MONO};font-size:12px;color:{color};">{_pct(val)}</td>'
 
+def _region_badge(label, color):
+    return f'<span style="display:inline-block;background:{color};color:#000;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
+
+def _combined_peer_table(ny_group, sfl_group, pb_rates):
+    """Single merged table: NY Metro + South Florida peers + Popular Bank pinned at bottom."""
+    prod_headers = "".join(
+        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:10px;white-space:nowrap;">{lbl}</th>'
+        for lbl in RATE_LABELS.values()
+    )
+
+    rows = ""
+    ny_peers  = ny_group.get("peers_with_rates", ny_group.get("banks", []))
+    sfl_peers = sfl_group.get("peers_with_rates", sfl_group.get("banks", []))
+
+    # NY Metro rows
+    rows += f"""
+    <tr style="background:{SURFACE};">
+      <td colspan="9" style="padding:5px 10px;font-size:10px;font-weight:700;color:#38bdf8;letter-spacing:.06em;text-transform:uppercase;">
+        ▸ New York Metro
+      </td>
+    </tr>"""
+    for peer in ny_peers:
+        r = peer.get("rates", {})
+        cells = "".join(_rate_td(r.get(p), pb_rates.get(p)) for p in PRODUCTS)
+        rows += f"""
+        <tr style="border-bottom:1px solid {BORDER};">
+          <td style="padding:5px 10px;font-size:11px;color:{TEXT};white-space:nowrap;">
+            {peer['name']}
+            <span style="margin-left:5px;display:inline-block;background:#1e3a5f;color:#38bdf8;font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;">NYM</span>
+          </td>
+          {cells}
+        </tr>"""
+
+    # South Florida rows
+    rows += f"""
+    <tr style="background:{SURFACE};">
+      <td colspan="9" style="padding:5px 10px;font-size:10px;font-weight:700;color:#4ade80;letter-spacing:.06em;text-transform:uppercase;">
+        ▸ South Florida
+      </td>
+    </tr>"""
+    for peer in sfl_peers:
+        r = peer.get("rates", {})
+        cells = "".join(_rate_td(r.get(p), pb_rates.get(p)) for p in PRODUCTS)
+        rows += f"""
+        <tr style="border-bottom:1px solid {BORDER};">
+          <td style="padding:5px 10px;font-size:11px;color:{TEXT};white-space:nowrap;">
+            {peer['name']}
+            <span style="margin-left:5px;display:inline-block;background:#1a3a2a;color:#4ade80;font-size:8px;font-weight:700;padding:1px 5px;border-radius:8px;">SFL</span>
+          </td>
+          {cells}
+        </tr>"""
+
+    # Popular Bank pinned row
+    subj_cells = "".join(
+        f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:11px;color:{ACCENT};font-weight:700;">{_pct(pb_rates.get(p))}</td>'
+        for p in PRODUCTS
+    )
+
+    return f"""
+    <div style="margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
+        Regional Peer Comparison — NY Metro &amp; South Florida
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;">
+          <thead>
+            <tr style="background:{SURFACE};border-bottom:2px solid {BORDER};">
+              <th style="padding:6px 10px;text-align:left;color:{TEXT2};font-size:10px;white-space:nowrap;">Institution</th>
+              {prod_headers}
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+            <tr style="background:{SURFACE};border-top:2px solid {ACCENT};">
+              <td style="padding:6px 10px;font-size:12px;color:{ACCENT};font-weight:700;">★ Popular Bank</td>
+              {subj_cells}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>"""
+
 def _peer_table(group_label, peers, subject_rates):
     prod_headers = "".join(
-        f'<th style="padding:6px 10px;text-align:right;color:{TEXT2};font-size:11px;white-space:nowrap;">{lbl}</th>'
+        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:10px;white-space:nowrap;">{lbl}</th>'
         for lbl in RATE_LABELS.values()
     )
     rows = ""
@@ -68,12 +150,12 @@ def _peer_table(group_label, peers, subject_rates):
         )
         rows += f"""
         <tr style="border-bottom:1px solid {BORDER};">
-          <td style="padding:6px 10px;font-size:12px;color:{TEXT};white-space:nowrap;">{peer['name']}</td>
+          <td style="padding:5px 10px;font-size:11px;color:{TEXT};white-space:nowrap;">{peer['name']}</td>
           {cells}
         </tr>"""
 
     subj_cells = "".join(
-        f'<td style="padding:6px 10px;text-align:right;font-family:{MONO};font-size:12px;color:{ACCENT};font-weight:600;">{_pct(subject_rates.get(p))}</td>'
+        f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:11px;color:{ACCENT};font-weight:700;">{_pct(subject_rates.get(p))}</td>'
         for p in PRODUCTS
     )
 
@@ -84,7 +166,7 @@ def _peer_table(group_label, peers, subject_rates):
         <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;">
           <thead>
             <tr style="background:{SURFACE};">
-              <th style="padding:6px 10px;text-align:left;color:{TEXT2};font-size:11px;white-space:nowrap;">Institution</th>
+              <th style="padding:6px 10px;text-align:left;color:{TEXT2};font-size:10px;white-space:nowrap;">Institution</th>
               {prod_headers}
             </tr>
           </thead>
@@ -202,12 +284,15 @@ def build_html_email(config, report, fred_data):
     pb_cd_tiers = subject_banks[0].get("cd_tiers")
     pb_rates = subject_banks[0]["rates"]
 
-    peer_tables = ""
-    for gk in ["ny_metro", "south_florida", "direct_online"]:
-        grp = peer_groups.get(gk, {})
-        peers = grp.get("peers_with_rates", grp.get("banks", []))
-        subj_r = subject_banks[1]["rates"] if gk == "direct_online" else pb_rates
-        peer_tables += _peer_table(grp.get("label", gk), peers, subj_r)
+    ny_grp  = peer_groups.get("ny_metro", {})
+    sfl_grp = peer_groups.get("south_florida", {})
+    do_grp  = peer_groups.get("direct_online", {})
+    do_peers = do_grp.get("peers_with_rates", do_grp.get("banks", []))
+
+    peer_tables = (
+        _combined_peer_table(ny_grp, sfl_grp, pb_rates) +
+        _peer_table(do_grp.get("label", "Direct / Online Banks"), do_peers, subject_banks[1]["rates"])
+    )
 
     analysis_cards = (
         _analysis_card("New York Metro Analysis", report.get("ny_metro_analysis", {})) +
@@ -240,7 +325,7 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 </style>
 </head>
 <body style="margin:0;padding:0;background:{BG};font-family:{FONT};color:{TEXT};-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;">
-<div style="max-width:1200px;margin:0 auto;padding:24px 16px;">
+<div style="max-width:1400px;margin:0 auto;padding:24px 16px;">
 
   <!-- Header -->
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
