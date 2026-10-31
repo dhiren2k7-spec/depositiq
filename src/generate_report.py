@@ -79,8 +79,8 @@ Produce a JSON object with EXACTLY these keys:
     "recommendation": "1 actionable repricing recommendation for South FL"
   }},
   "direct_online_analysis": {{
-    "position": "1 sentence: Popular Direct position vs direct/online banks",
-    "gaps": ["up to 3 key rate gaps vs online banks"],
+    "position": "1 sentence: Popular Direct competitive standing vs direct/online banks",
+    "gaps": ["up to 3 key observations about Popular Direct's rate positioning — notable strengths, gaps, or trends vs online peers"],
     "recommendation": "1 actionable repricing recommendation for Popular Direct"
   }},
   "top_priority": "Single most important repricing action this week",

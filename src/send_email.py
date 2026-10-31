@@ -77,7 +77,7 @@ def _rate_td(val, compare=None):
 def _region_badge(label, color):
     return f'<span style="display:inline-block;background:{color};color:#000;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
 
-def _peer_table(group_label, peers, subject_rates, rate_labels=None):
+def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subject=True):
     if rate_labels is None:
         rate_labels = RATE_LABELS
     products = list(rate_labels.keys())
@@ -115,25 +115,27 @@ def _peer_table(group_label, peers, subject_rates, rate_labels=None):
           </thead>
           <tbody>
             {rows}
-            <tr style="background:{SURFACE};border-top:2px solid {ACCENT};">
+            {f'''<tr style="background:{SURFACE};border-top:2px solid {ACCENT};">
               <td style="padding:6px 10px;font-size:12px;color:{ACCENT};font-weight:700;">★ Popular Bank</td>
               {subj_cells}
-            </tr>
+            </tr>''' if show_subject else ''}
           </tbody>
         </table>
       </div>
     </div>"""
 
 def _analysis_card(title, analysis):
-    gaps = "".join(
+    bullets = analysis.get("gaps", []) or analysis.get("takeaways", [])
+    items = "".join(
         f'<li style="margin-bottom:4px;color:{TEXT2};">{g}</li>'
-        for g in analysis.get("gaps", [])
+        for g in bullets
     )
+    bullet_section = f'<div style="font-size:10px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.07em;margin:8px 0 4px;">Key Takeaways</div><ul style="margin:0;padding-left:18px;font-size:12px;">{items}</ul>' if items else ""
     return f"""
     <div style="background:{CARD};border-left:3px solid {ACCENT};border-radius:4px;padding:16px;margin-bottom:16px;">
       <div style="font-size:12px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">{title}</div>
-      <p style="margin:0 0 8px;color:{TEXT};font-size:13px;">{analysis.get('position','')}</p>
-      <ul style="margin:0;padding-left:18px;font-size:12px;">{gaps}</ul>
+      <p style="margin:0 0 4px;color:{TEXT};font-size:13px;">{analysis.get('position','')}</p>
+      {bullet_section}
     </div>"""
 
 def _risk_badge(risk_level):
@@ -562,13 +564,13 @@ def build_html_email(config, report, fred_data):
     do_peers = do_grp.get("peers_with_rates", do_grp.get("banks", []))
 
     peer_tables = (
-        _peer_table(do_grp.get("label", "Direct / Online Banks"), do_peers, subject_banks[1]["rates"], DO_RATE_LABELS)
+        _peer_table(do_grp.get("label", "Popular Direct"), do_peers, subject_banks[1]["rates"], DO_RATE_LABELS, show_subject=False)
     )
 
     analysis_cards = (
         _analysis_card("New York Metro Analysis", report.get("ny_metro_analysis", {})) +
         _analysis_card("South Florida Analysis",  report.get("south_florida_analysis", {})) +
-        _analysis_card("Direct / Online Analysis (Popular Direct)", report.get("direct_online_analysis", {}))
+        _analysis_card("Popular Direct — Key Takeaways", report.get("direct_online_analysis", {}))
     )
 
     fred_mapping = {
