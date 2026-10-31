@@ -215,21 +215,22 @@ _TENOR_TO_PRODUCT = {
 
 def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
     """
-    Two-section stacked CD comparison table:
-      Section 1 (NYM): [Tenor] | [NYM bank APYs...] | [★ Popular Bank APY]
-      Section 2 (SFL): [Tenor] | [SFL bank APYs...] | [★ Popular Bank APY]
-    Popular Bank shows tier[0] ($1-$24,999) APY as its retail-comparable rate.
+    One table per Popular Bank CD tier (5 total).
+    Each table: NYM section on top, SFL section below.
+    Columns: [Tenor] | [peer APYs...] | [★ Popular Bank APY for that tier]
     """
     if not pb_cd_tiers:
         return ""
 
-    tenors = pb_cd_tiers["tenors"]
+    tiers  = pb_cd_tiers["tiers"]   # list of 5 tier label strings
+    tenors = pb_cd_tiers["tenors"]  # OrderedDict: tenor_label -> list of 5 tier dicts
 
     ny_peers  = ny_group.get("peers_with_rates",  ny_group.get("banks",  []))
     sfl_peers = sfl_group.get("peers_with_rates", sfl_group.get("banks", []))
 
     def _bank_hdr(name, badge_color):
-        short = name.replace(" Bank", "").replace(" NA", "").replace(", N.A.", "").replace(" Inc", "")[:14]
+        short = (name.replace(" Bank", "").replace(" NA", "")
+                     .replace(", N.A.", "").replace(" Inc", "")[:14])
         return (
             f'<th style="padding:4px 6px;text-align:right;color:{TEXT2};font-size:9px;'
             f'white-space:nowrap;border-left:1px solid {BORDER};background:{SURFACE};">'
@@ -245,102 +246,98 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
             f'<div style="font-size:8px;color:{ACCENT};">APY</div></th>'
         )
 
-    def _peer_apy_td(rate_val, border_left=False, border_style=None):
-        bl = border_style or (f"border-left:1px solid {BORDER};" if border_left else "")
-        if rate_val is None:
+    def _peer_td(val, first=False):
+        bl = f"border-left:1px solid {BORDER};" if first else ""
+        if val is None:
             return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT2};{bl}">—</td>'
-        return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT};{bl}">{rate_val:.2f}%</td>'
+        return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT};{bl}">{val:.2f}%</td>'
 
-    def _pb_apy_td(apy_val):
+    def _pb_td(apy_val):
         bl = f"border-left:2px solid {ACCENT};"
         if apy_val is None:
             return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT2};{bl}">—</td>'
         return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{ACCENT};font-weight:700;{bl}">{apy_val:.2f}%</td>'
 
-    def _section_rows(peers, region_color):
+    def _section_header(label, color, col_count):
+        return (
+            f'<tr style="background:{SURFACE};">'
+            f'<td colspan="{col_count}" style="padding:6px 8px;font-size:10px;font-weight:700;'
+            f'color:{color};letter-spacing:.05em;border-top:2px solid {BORDER};'
+            f'border-bottom:1px solid {BORDER};">{label}</td>'
+            f'</tr>'
+        )
+
+    def _bank_header_row(peers, badge_color):
+        return (
+            f'<tr style="border-bottom:2px solid {BORDER};">'
+            f'<th style="padding:4px 8px;text-align:left;color:{TEXT2};font-size:9px;background:{SURFACE};">Tenor</th>'
+            + "".join(_bank_hdr(b["name"], badge_color) for b in peers)
+            + _pb_hdr()
+            + '</tr>'
+        )
+
+    def _data_rows(peers, tier_idx):
         rows = ""
         for i, (tenor, tier_vals) in enumerate(tenors.items()):
             bg = CARD if i % 2 == 0 else SURFACE
             product_key = _TENOR_TO_PRODUCT.get(tenor)
-            pb_apy = tier_vals[0]["apy"] if tier_vals else None
+            pb_apy = tier_vals[tier_idx]["apy"] if tier_vals and tier_idx < len(tier_vals) else None
 
-            peer_cells = ""
-            for j, peer in enumerate(peers):
-                r = peer.get("rates", {})
-                val = r.get(product_key) if product_key else None
-                peer_cells += _peer_apy_td(val, border_left=(j == 0))
-
+            peer_cells = "".join(
+                _peer_td(peer.get("rates", {}).get(product_key) if product_key else None, first=(j == 0))
+                for j, peer in enumerate(peers)
+            )
             rows += (
                 f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">'
                 f'<td style="padding:5px 8px;font-size:11px;color:{TEXT};white-space:nowrap;font-weight:600;">{tenor}</td>'
-                f'{peer_cells}'
-                f'{_pb_apy_td(pb_apy)}'
+                f'{peer_cells}{_pb_td(pb_apy)}'
                 f'</tr>'
             )
         return rows
 
-    # NYM section
-    ny_count  = len(ny_peers)
-    ny_col_total = ny_count + 2  # tenor col + peers + PB
-    ny_section_hdr = (
-        f'<tr style="background:{SURFACE};">'
-        f'<td colspan="{ny_col_total}" style="padding:6px 8px;font-size:10px;font-weight:700;'
-        f'color:#38bdf8;letter-spacing:.05em;border-top:2px solid #38bdf840;'
-        f'border-bottom:1px solid {BORDER};">▸ NY METRO REGION</td>'
-        f'</tr>'
-    )
-    ny_bank_hdrs = (
-        f'<tr style="border-bottom:2px solid {BORDER};">'
-        f'<th style="padding:4px 8px;text-align:left;color:{TEXT2};font-size:9px;background:{SURFACE};">Tenor</th>'
-        + "".join(_bank_hdr(b["name"], "#38bdf8") for b in ny_peers)
-        + _pb_hdr()
-        + f'</tr>'
-    )
+    # Build one table per tier
+    tables_html = ""
+    for tier_idx, tier_label in enumerate(tiers):
+        ny_cols  = len(ny_peers)  + 2   # tenor + peers + PB
+        sfl_cols = len(sfl_peers) + 2
 
-    # SFL section
-    sfl_count = len(sfl_peers)
-    sfl_col_total = sfl_count + 2
-    sfl_section_hdr = (
-        f'<tr style="background:{SURFACE};">'
-        f'<td colspan="{sfl_col_total}" style="padding:6px 8px;font-size:10px;font-weight:700;'
-        f'color:#4ade80;letter-spacing:.05em;border-top:3px solid {BORDER};'
-        f'border-bottom:1px solid {BORDER};">▸ SOUTH FLORIDA REGION</td>'
-        f'</tr>'
-    )
-    sfl_bank_hdrs = (
-        f'<tr style="border-bottom:2px solid {BORDER};">'
-        f'<th style="padding:4px 8px;text-align:left;color:{TEXT2};font-size:9px;background:{SURFACE};">Tenor</th>'
-        + "".join(_bank_hdr(b["name"], "#4ade80") for b in sfl_peers)
-        + _pb_hdr()
-        + f'</tr>'
-    )
+        ny_section  = _section_header("▸ NY METRO REGION",       "#38bdf8", ny_cols)
+        ny_hdrs     = _bank_header_row(ny_peers,  "#38bdf8")
+        ny_rows     = _data_rows(ny_peers,  tier_idx)
 
-    ny_rows  = _section_rows(ny_peers,  "#38bdf8")
-    sfl_rows = _section_rows(sfl_peers, "#4ade80")
+        sfl_section = _section_header("▸ SOUTH FLORIDA REGION",  "#4ade80", sfl_cols)
+        sfl_hdrs    = _bank_header_row(sfl_peers, "#4ade80")
+        sfl_rows    = _data_rows(sfl_peers, tier_idx)
+
+        tables_html += f"""
+        <div style="margin-bottom:32px;">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:700;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;">
+              CD Tier {tier_idx + 1} — {tier_label}
+            </span>
+            <span style="font-size:10px;color:{TEXT2};">
+              Peer APY = nearest tenor bucket &nbsp;·&nbsp;
+              <span style="color:{ACCENT};font-weight:600;">★ Popular Bank</span> = Tier {tier_idx + 1} APY
+            </span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;font-size:11px;">
+              <thead>{ny_section}{ny_hdrs}</thead>
+              <tbody>
+                {ny_rows}
+                {sfl_section}{sfl_hdrs}
+                {sfl_rows}
+              </tbody>
+            </table>
+          </div>
+        </div>"""
 
     return f"""
-    <div style="margin-bottom:28px;">
-      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
-        CD Tenor Comparison — Brick &amp; Mortar Peers vs. Popular Bank
+    <div style="margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">
+        CD Tenor Comparison — Brick &amp; Mortar Peers vs. Popular Bank (All 5 Tiers)
       </div>
-      <div style="font-size:11px;color:{TEXT2};margin-bottom:8px;">
-        Peer APY = flat published rate for nearest tenor bucket &nbsp;·&nbsp;
-        <span style="color:{ACCENT};font-weight:600;">★ Popular Bank</span> = Tier 1 ($1–$24,999) APY
-      </div>
-      <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;font-size:11px;">
-          <thead>
-            {ny_section_hdr}
-            {ny_bank_hdrs}
-          </thead>
-          <tbody>
-            {ny_rows}
-            {sfl_section_hdr}
-            {sfl_bank_hdrs}
-            {sfl_rows}
-          </tbody>
-        </table>
-      </div>
+      {tables_html}
     </div>"""
 
 
