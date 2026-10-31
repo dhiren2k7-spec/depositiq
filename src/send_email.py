@@ -404,7 +404,8 @@ def send_email(html_body, to_email, from_email, week_date=None, excel_path=None,
     msg = MIMEMultipart("mixed")
     msg["Subject"] = f"DepositIQ — Popular Bank Rate Intelligence — {week_date}"
     msg["From"] = f"DepositIQ <{GMAIL_USER}>"
-    msg["To"] = to_email
+    recipients = [r.strip() for r in to_email.split(",") if r.strip()]
+    msg["To"] = ", ".join(recipients)
 
     # Inline HTML body
     alt = MIMEMultipart("alternative")
@@ -432,7 +433,7 @@ def send_email(html_body, to_email, from_email, week_date=None, excel_path=None,
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-        server.sendmail(GMAIL_USER, to_email, msg.as_string())
+        server.sendmail(GMAIL_USER, recipients, msg.as_string())
 
     print(f"Email sent to {to_email}")
     return 200
