@@ -198,6 +198,131 @@ def _risk_badge(risk_level):
     c = colors.get(risk_level, TEXT2)
     return f'<span style="display:inline-block;background:{c};color:#000;font-size:11px;font-weight:700;padding:2px 10px;border-radius:12px;letter-spacing:.05em;">{risk_level} RISK</span>'
 
+# Maps each Popular Bank tenor label to the flat FDIC product key for peers
+_TENOR_TO_PRODUCT = {
+    "30-89 Days":    "cd_3mo",
+    "90-179 Days":   "cd_3mo",
+    "180-269 Days":  "cd_6mo",
+    "270-364 Days":  "cd_6mo",
+    "12-17 Months":  "cd_12mo",
+    "18-23 Months":  "cd_12mo",
+    "24-35 Months":  "cd_24mo",
+    "36-47 Months":  None,
+    "48-59 Months":  None,
+    "60-119 Months": None,
+    "120 Months":    None,
+}
+
+def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
+    """
+    Cross-bank CD comparison table:
+      Rows    = Popular Bank's 11 CD tenors
+      Columns = [Tenor] [NYM banks APY...] [SFL banks APY...] [PB Tier1 R/APY ... Tier5 R/APY]
+    Peer banks show flat APY for the mapped tenor bucket; Popular Bank shows full 5-tier R/APY.
+    """
+    if not pb_cd_tiers:
+        return ""
+
+    tiers  = pb_cd_tiers["tiers"]
+    tenors = pb_cd_tiers["tenors"]
+
+    ny_peers  = ny_group.get("peers_with_rates",  ny_group.get("banks",  []))
+    sfl_peers = sfl_group.get("peers_with_rates", sfl_group.get("banks", []))
+
+    # ── Header row 1: region group spans ──────────────────────────────────────
+    ny_count  = len(ny_peers)
+    sfl_count = len(sfl_peers)
+    pb_span   = len(tiers) * 2   # Rate + APY per tier
+
+    hdr1 = (
+        f'<th style="padding:5px 8px;text-align:left;color:{TEXT2};font-size:10px;background:{SURFACE};" rowspan="2">Tenor</th>'
+        f'<th colspan="{ny_count}" style="padding:5px 8px;text-align:center;color:#38bdf8;font-size:10px;font-weight:700;border-left:2px solid {BORDER};background:{SURFACE};letter-spacing:.04em;">▸ NY Metro</th>'
+        f'<th colspan="{sfl_count}" style="padding:5px 8px;text-align:center;color:#4ade80;font-size:10px;font-weight:700;border-left:2px solid {BORDER};background:{SURFACE};letter-spacing:.04em;">▸ South Florida</th>'
+        f'<th colspan="{pb_span}" style="padding:5px 8px;text-align:center;color:{ACCENT};font-size:10px;font-weight:700;border-left:2px solid {ACCENT};background:{SURFACE};letter-spacing:.04em;">★ Popular Bank — All Tiers</th>'
+    )
+
+    # ── Header row 2: individual bank names + PB tier names ───────────────────
+    def _bank_hdr(name, badge_color, abbrev):
+        short = name.replace(" Bank", "").replace(" NA", "").replace(" Inc", "")[:14]
+        return (
+            f'<th style="padding:4px 6px;text-align:right;color:{TEXT2};font-size:9px;'
+            f'white-space:nowrap;border-left:1px solid {BORDER};background:{SURFACE};">'
+            f'<div style="color:{badge_color};font-weight:700;font-size:9px;">{short}</div>'
+            f'<div style="font-size:8px;color:{TEXT2};">APY</div></th>'
+        )
+
+    ny_hdrs  = "".join(_bank_hdr(b["name"], "#38bdf8", "NYM") for b in ny_peers)
+    sfl_hdrs = "".join(_bank_hdr(b["name"], "#4ade80", "SFL") for b in sfl_peers)
+
+    pb_tier_hdrs = "".join(
+        f'<th colspan="2" style="padding:4px 6px;text-align:center;color:{ACCENT};font-size:9px;'
+        f'border-left:1px solid {BORDER};background:{SURFACE};white-space:nowrap;">{t}</th>'
+        for t in tiers
+    )
+    hdr2 = ny_hdrs + f'<th style="border-left:2px solid {BORDER};"></th>'[0:0] + sfl_hdrs + pb_tier_hdrs
+
+    # ── Data rows ─────────────────────────────────────────────────────────────
+    def _peer_apy_td(rate_val, border_left=False):
+        border = f"border-left:1px solid {BORDER};" if border_left else ""
+        if rate_val is None:
+            return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT2};{border}">—</td>'
+        return f'<td style="padding:4px 6px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT};{border}">{rate_val:.2f}%</td>'
+
+    rows = ""
+    for i, (tenor, tier_vals) in enumerate(tenors.items()):
+        bg = CARD if i % 2 == 0 else SURFACE
+        product_key = _TENOR_TO_PRODUCT.get(tenor)
+
+        # NY Metro peer cells
+        ny_cells = ""
+        for j, peer in enumerate(ny_peers):
+            r = peer.get("rates", {})
+            val = r.get(product_key) if product_key else None
+            ny_cells += _peer_apy_td(val, border_left=(j == 0))
+
+        # SFL peer cells
+        sfl_cells = ""
+        for j, peer in enumerate(sfl_peers):
+            r = peer.get("rates", {})
+            val = r.get(product_key) if product_key else None
+            sfl_cells += _peer_apy_td(val, border_left=(j == 0))
+
+        # Popular Bank tier cells (Rate / APY per tier)
+        pb_cells = ""
+        for k, v in enumerate(tier_vals):
+            bl = "border-left:2px solid #fb923c40;" if k == 0 else f"border-left:1px solid {BORDER};"
+            pb_cells += (
+                f'<td style="padding:4px 5px;text-align:right;font-family:{MONO};font-size:10px;color:{TEXT2};{bl}">{v["rate"]:.2f}%</td>'
+                f'<td style="padding:4px 5px;text-align:right;font-family:{MONO};font-size:10px;color:{ACCENT};font-weight:600;">{v["apy"]:.2f}%</td>'
+            )
+
+        rows += (
+            f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">'
+            f'<td style="padding:5px 8px;font-size:11px;color:{TEXT};white-space:nowrap;font-weight:600;">{tenor}</td>'
+            f'{ny_cells}{sfl_cells}{pb_cells}'
+            f'</tr>'
+        )
+
+    return f"""
+    <div style="margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
+        CD Tenor &amp; Tier Comparison — All Brick &amp; Mortar Banks (NYM + SFL + Popular Bank)
+      </div>
+      <div style="font-size:11px;color:{TEXT2};margin-bottom:8px;">
+        Peer APY = flat published rate for nearest tenor bucket · Popular Bank = full 5-tier Rate / <span style="color:{ACCENT};font-weight:600;">APY</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;font-size:11px;">
+          <thead>
+            <tr>{hdr1}</tr>
+            <tr style="border-bottom:2px solid {BORDER};">{hdr2}</tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
+    </div>"""
+
+
 def _cd_tier_table(cd_tiers):
     tiers = cd_tiers["tiers"]
     tenors = cd_tiers["tenors"]
@@ -352,8 +477,8 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   <!-- Subject Banks -->
   {subject_table}
 
-  <!-- Popular Bank CD Tier Sheet -->
-  {_cd_tier_table(pb_cd_tiers) if pb_cd_tiers else ''}
+  <!-- Unified CD Tenor & Tier Table (NYM + SFL + Popular Bank) -->
+  {_unified_cd_table(ny_grp, sfl_grp, pb_cd_tiers) if pb_cd_tiers else ''}
 
   <!-- Peer Tables -->
   {peer_tables}
