@@ -119,6 +119,51 @@ def _risk_badge(risk_level):
     c = colors.get(risk_level, TEXT2)
     return f'<span style="display:inline-block;background:{c};color:#000;font-size:11px;font-weight:700;padding:2px 10px;border-radius:12px;letter-spacing:.05em;">{risk_level} RISK</span>'
 
+def _cd_tier_table(cd_tiers):
+    tiers = cd_tiers["tiers"]
+    tenors = cd_tiers["tenors"]
+
+    tier_hdrs = "".join(
+        f'<th colspan="2" style="padding:6px 8px;text-align:center;color:{ACCENT};font-size:10px;border-left:1px solid {BORDER};white-space:nowrap;">{t}</th>'
+        for t in tiers
+    )
+    sub_hdrs = "".join(
+        f'<th style="padding:4px 6px;text-align:right;color:{TEXT2};font-size:10px;border-left:1px solid {BORDER};">Rate</th>'
+        f'<th style="padding:4px 6px;text-align:right;color:{TEXT2};font-size:10px;">APY</th>'
+        for _ in tiers
+    )
+
+    rows = ""
+    for i, (tenor, tier_vals) in enumerate(tenors.items()):
+        bg = CARD if i % 2 == 0 else SURFACE
+        cells = "".join(
+            f'<td style="padding:5px 6px;text-align:right;font-family:{MONO};font-size:11px;color:{TEXT2};border-left:1px solid {BORDER};">{v["rate"]:.2f}%</td>'
+            f'<td style="padding:5px 6px;text-align:right;font-family:{MONO};font-size:11px;color:{TEXT};">{v["apy"]:.2f}%</td>'
+            for v in tier_vals
+        )
+        rows += f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">' \
+                f'<td style="padding:5px 8px;font-size:11px;color:{TEXT};white-space:nowrap;">{tenor}</td>{cells}</tr>'
+
+    return f"""
+    <div style="margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:600;color:{ACCENT};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Popular Bank — CD Rate Sheet (Consumer &amp; Business)</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:6px;overflow:hidden;font-size:11px;">
+          <thead>
+            <tr style="background:{SURFACE};">
+              <th style="padding:6px 8px;text-align:left;color:{TEXT2};font-size:10px;">Tenor</th>
+              {tier_hdrs}
+            </tr>
+            <tr style="background:{SURFACE};border-bottom:2px solid {BORDER};">
+              <th></th>{sub_hdrs}
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
+    </div>"""
+
+
 def build_html_email(config, report, fred_data):
     now = datetime.now().strftime("%B %d, %Y")
     subject_banks = config["subject_banks"]
@@ -157,6 +202,7 @@ def build_html_email(config, report, fred_data):
       </div>
     </div>"""
 
+    pb_cd_tiers = subject_banks[0].get("cd_tiers")
     pb_rates = subject_banks[0]["rates"]
 
     peer_tables = ""
@@ -231,6 +277,9 @@ def build_html_email(config, report, fred_data):
 
   <!-- Subject Banks -->
   {subject_table}
+
+  <!-- Popular Bank CD Tier Sheet -->
+  {_cd_tier_table(pb_cd_tiers) if pb_cd_tiers else ''}
 
   <!-- Peer Tables -->
   {peer_tables}

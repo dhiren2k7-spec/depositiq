@@ -36,6 +36,10 @@ def build_excel(config, report, fred_data, week_date):
 
     _add_analysis_sheet(wb, report, fred_data, week_date)
 
+    pb_cd_tiers = config["subject_banks"][0].get("cd_tiers")
+    if pb_cd_tiers:
+        _add_cd_tier_sheet(wb, pb_cd_tiers)
+
     wb.save(path)
     return path
 
@@ -95,6 +99,31 @@ def _add_analysis_sheet(wb, report, fred_data, week_date):
     fred_map = {"FEDFUNDS":"Fed Funds","MMNRNNS":"Nat'l MMA","CD3NAX":"3-Mo CD","CD6NAX":"6-Mo CD","CD1NAX":"12-Mo CD"}
     for sid, lbl in fred_map.items():
         ws.write_row(r, [lbl, _pct(fred_data.get(sid))]); r += 1
+
+
+def _add_cd_tier_sheet(wb, cd_tiers):
+    ws = wb.add_sheet("CD Rate Sheet")
+    tiers = cd_tiers["tiers"]
+    tenors = cd_tiers["tenors"]
+
+    # Header row 0: tier labels spanning Rate/APY pairs
+    hdr = ["Tenor"]
+    for t in tiers:
+        hdr.extend([t, ""])
+    ws.write_row(0, hdr, bold=True, bg="4472C4", fg="FFFFFF")
+
+    # Sub-header row 1: Rate / APY under each tier
+    sub = [""]
+    for _ in tiers:
+        sub.extend(["Rate", "APY"])
+    ws.write_row(1, sub, bold=True, bg="1C2128", fg="FB923C")
+
+    # Data rows
+    for r, (tenor, tier_vals) in enumerate(tenors.items(), start=2):
+        row = [tenor]
+        for v in tier_vals:
+            row.extend([f"{v['rate']:.2f}%", f"{v['apy']:.2f}%"])
+        ws.write_row(r, row)
 
 
 class _Cell:
