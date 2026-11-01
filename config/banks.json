@@ -285,8 +285,13 @@
         "mma": null,
         "cd_3mo": 4.3,
         "cd_6mo": 4.35,
+        "cd_9mo": null,
         "cd_12mo": 4.6,
-        "cd_24mo": 4.8
+        "cd_18mo": null,
+        "cd_24mo": 4.8,
+        "cd_36mo": null,
+        "cd_48mo": null,
+        "cd_60mo": null
       }
     }
   ],
@@ -446,8 +451,13 @@
     "mma",
     "cd_3mo",
     "cd_6mo",
+    "cd_9mo",
     "cd_12mo",
-    "cd_24mo"
+    "cd_18mo",
+    "cd_24mo",
+    "cd_36mo",
+    "cd_48mo",
+    "cd_60mo"
   ],
   "rate_labels": {
     "checking_apy": "Checking APY",
@@ -455,8 +465,13 @@
     "mma": "Money Market",
     "cd_3mo": "3-Mo CD",
     "cd_6mo": "6-Mo CD",
+    "cd_9mo": "9-Mo CD",
     "cd_12mo": "12-Mo CD",
-    "cd_24mo": "24-Mo CD"
+    "cd_18mo": "18-Mo CD",
+    "cd_24mo": "24-Mo CD",
+    "cd_36mo": "3-Yr CD",
+    "cd_48mo": "4-Yr CD",
+    "cd_60mo": "5-Yr CD"
   },
   "promo_cd_excel_path": "data/promo_cd_survey.xlsx"
 }

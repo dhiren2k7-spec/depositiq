@@ -45,6 +45,24 @@ COLUMN_MAP = {
     "24-Month CD APY":    "cd_24mo",
     "CD 24 Month":        "cd_24mo",
     "2 Year CD":          "cd_24mo",
+    "9 Month CD":         "cd_9mo",
+    "9-Month CD APY":     "cd_9mo",
+    "CD 9 Month":         "cd_9mo",
+    "18 Month CD":        "cd_18mo",
+    "18-Month CD APY":    "cd_18mo",
+    "CD 18 Month":        "cd_18mo",
+    "36 Month CD":        "cd_36mo",
+    "36-Month CD APY":    "cd_36mo",
+    "CD 36 Month":        "cd_36mo",
+    "3 Year CD":          "cd_36mo",
+    "48 Month CD":        "cd_48mo",
+    "48-Month CD APY":    "cd_48mo",
+    "CD 48 Month":        "cd_48mo",
+    "4 Year CD":          "cd_48mo",
+    "60 Month CD":        "cd_60mo",
+    "60-Month CD APY":    "cd_60mo",
+    "CD 60 Month":        "cd_60mo",
+    "5 Year CD":          "cd_60mo",
 }
 
 # Peer group assignment — map institution names to peer group keys
@@ -176,7 +194,7 @@ def _parse_curinos_excel(xlsx_path, inspect=False):
         "direct_online": {"label": PEER_GROUP_LABELS["direct_online"],  "banks": []},
     }
 
-    products = ["checking_apy", "savings", "mma", "cd_3mo", "cd_6mo", "cd_12mo", "cd_24mo"]
+    products = ["checking_apy", "savings", "mma", "cd_3mo", "cd_6mo", "cd_9mo", "cd_12mo", "cd_18mo", "cd_24mo", "cd_36mo", "cd_48mo", "cd_60mo"]
 
     for row in sheet.iter_rows(min_row=2, values_only=True):
         bank_name = str(row[name_col]).strip() if row[name_col] else ""
