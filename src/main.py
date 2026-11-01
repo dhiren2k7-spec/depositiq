@@ -6,8 +6,7 @@ from datetime import datetime
 from fetch_data import fetch_all_peer_rates, fetch_fred_data
 from fetch_popular_direct import fetch_popular_direct_rates
 from generate_report import generate_report
-from send_email import build_html_email, send_email, generate_pdf
-from excel_output import build_excel
+from send_email import build_html_email, send_email
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../config/banks.json")
 
@@ -53,10 +52,6 @@ def run():
     print("  Building HTML email...")
     html_body = build_html_email(config_with_rates, report, fred_data)
 
-    print("  Building Excel workbook...")
-    excel_path = build_excel(config_with_rates, report, fred_data, week_date)
-    print(f"  Excel saved: {excel_path}")
-
     # Save HTML report to disk
     os.makedirs("../output", exist_ok=True)
     safe_date = week_date.replace(" ", "_").replace(",", "")
@@ -65,18 +60,11 @@ def run():
         f.write(html_body)
     print(f"  HTML saved: {html_path}")
 
-    # Generate PDF
-    pdf_path = f"../output/DepositIQ_{safe_date}.pdf"
-    print("  Generating PDF...")
-    pdf_ok = generate_pdf(html_body, pdf_path)
-    if not pdf_ok:
-        pdf_path = None
-
     to_email = config["client"]["report_email"]
     bcc_email = config["client"].get("report_bcc", "")
     print(f"  Sending email to {to_email}...")
     status = send_email(html_body, to_email, None, week_date,
-                        excel_path=excel_path, html_path=html_path, pdf_path=pdf_path,
+                        html_path=html_path,
                         bcc_email=bcc_email)
     print(f"  Email status: {status}")
 
