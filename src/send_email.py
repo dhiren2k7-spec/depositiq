@@ -77,17 +77,17 @@ def _rate_color(subj, peer):
 
 def _rate_td(val, compare=None):
     color = _rate_color(val, compare) if compare is not None else TEXT
-    return f'<td style="padding:7px 12px;text-align:right;font-family:{MONO};font-size:14px;color:{color};">{_pct(val)}</td>'
+    return f'<td style="padding:7px 12px;text-align:right;font-family:{MONO};font-size:18px;color:{color};">{_pct(val)}</td>'
 
 def _region_badge(label, color):
-    return f'<span style="display:inline-block;background:{color};color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
+    return f'<span style="display:inline-block;background:{color};color:#fff;font-size:14px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
 
 def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subject=True):
     if rate_labels is None:
         rate_labels = RATE_LABELS
     products = list(rate_labels.keys())
     prod_headers = "".join(
-        f'<th style="padding:6px 10px;text-align:right;color:{TEXT2};font-size:13px;white-space:nowrap;font-weight:600;">{lbl}</th>'
+        f'<th style="padding:6px 10px;text-align:right;color:{TEXT2};font-size:17px;white-space:nowrap;font-weight:600;">{lbl}</th>'
         for lbl in rate_labels.values()
     )
     rows = ""
@@ -98,30 +98,30 @@ def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subjec
         )
         rows += f"""
         <tr style="border-bottom:1px solid {BORDER};">
-          <td style="padding:6px 12px;font-size:14px;color:{TEXT};white-space:nowrap;">{peer['name']}</td>
+          <td style="padding:6px 12px;font-size:18px;color:{TEXT};white-space:nowrap;">{peer['name']}</td>
           {cells}
         </tr>"""
 
     subj_cells = "".join(
-        f'<td style="padding:6px 10px;text-align:right;font-family:{MONO};font-size:14px;color:{PB_BLUE};font-weight:700;">{_pct(subject_rates.get(p))}</td>'
+        f'<td style="padding:6px 10px;text-align:right;font-family:{MONO};font-size:18px;color:{PB_BLUE};font-weight:700;">{_pct(subject_rates.get(p))}</td>'
         for p in products
     )
 
     return f"""
     <div style="margin-bottom:32px;">
-      <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">{group_label}</div>
+      <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">{group_label}</div>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
           <thead>
             <tr style="background:{SURFACE};border-bottom:2px solid {PB_BLUE};">
-              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:13px;white-space:nowrap;font-weight:600;">Institution</th>
+              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:17px;white-space:nowrap;font-weight:600;">Institution</th>
               {prod_headers}
             </tr>
           </thead>
           <tbody>
             {rows}
             {f'''<tr style="background:#e8f0fb;border-top:2px solid {PB_BLUE};">
-              <td style="padding:8px 12px;font-size:14px;color:{PB_BLUE};font-weight:700;">★ Popular Bank</td>
+              <td style="padding:8px 12px;font-size:18px;color:{PB_BLUE};font-weight:700;">★ Popular Bank</td>
               {subj_cells}
             </tr>''' if show_subject else ''}
           </tbody>
@@ -132,21 +132,21 @@ def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subjec
 def _analysis_card(title, analysis):
     bullets = analysis.get("gaps", []) or analysis.get("takeaways", [])
     items = "".join(
-        f'<li style="margin-bottom:6px;color:{TEXT2};font-size:14px;">{g}</li>'
+        f'<li style="margin-bottom:6px;color:{TEXT2};font-size:18px;">{g}</li>'
         for g in bullets
     )
-    bullet_section = f'<div style="font-size:13px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.07em;margin:10px 0 6px;">Key Takeaways</div><ul style="margin:0;padding-left:20px;font-size:14px;">{items}</ul>' if items else ""
+    bullet_section = f'<div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.07em;margin:10px 0 6px;">Key Takeaways</div><ul style="margin:0;padding-left:20px;font-size:18px;">{items}</ul>' if items else ""
     return f"""
     <div style="background:{CARD};border-left:4px solid {PB_BLUE};border-radius:6px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-      <div style="font-size:15px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">{title}</div>
-      <p style="margin:0 0 6px;color:{TEXT};font-size:15px;">{analysis.get('position','')}</p>
+      <div style="font-size:19px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">{title}</div>
+      <p style="margin:0 0 6px;color:{TEXT};font-size:18px;">{analysis.get('position','')}</p>
       {bullet_section}
     </div>"""
 
 def _risk_badge(risk_level):
     colors = {"LOW": GREEN, "MEDIUM": ACCENT, "HIGH": RED}
     c = colors.get(risk_level, TEXT2)
-    return f'<span style="display:inline-block;background:{c};color:#fff;font-size:13px;font-weight:700;padding:3px 12px;border-radius:12px;letter-spacing:.05em;">{risk_level} RISK</span>'
+    return f'<span style="display:inline-block;background:{c};color:#fff;font-size:16px;font-weight:700;padding:3px 12px;border-radius:12px;letter-spacing:.05em;">{risk_level} RISK</span>'
 
 # Maps each Popular Bank tenor label to the flat FDIC product key for peers
 _TENOR_TO_PRODUCT = {
@@ -182,36 +182,36 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
         short = (name.replace(" Bank", "").replace(" NA", "")
                      .replace(", N.A.", "").replace(" Inc", "")[:14])
         return (
-            f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:12px;'
+            f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:15px;'
             f'white-space:nowrap;border-left:1px solid {BORDER};background:{SURFACE};">'
-            f'<div style="color:{badge_color};font-weight:700;font-size:12px;">{short}</div>'
-            f'<div style="font-size:11px;color:{TEXT2};">APY</div></th>'
+            f'<div style="color:{badge_color};font-weight:700;font-size:15px;">{short}</div>'
+            f'<div style="font-size:14px;color:{TEXT2};">APY</div></th>'
         )
 
     def _pb_hdr():
         return (
-            f'<th style="padding:5px 8px;text-align:right;font-size:12px;'
+            f'<th style="padding:5px 8px;text-align:right;font-size:15px;'
             f'white-space:nowrap;border-left:2px solid {PB_BLUE};background:#e8f0fb;">'
-            f'<div style="color:{PB_BLUE};font-weight:700;font-size:12px;">★ Popular</div>'
-            f'<div style="font-size:11px;color:{PB_BLUE};">APY</div></th>'
+            f'<div style="color:{PB_BLUE};font-weight:700;font-size:15px;">★ Popular</div>'
+            f'<div style="font-size:14px;color:{PB_BLUE};">APY</div></th>'
         )
 
     def _peer_td(val, first=False):
         bl = f"border-left:1px solid {BORDER};" if first else ""
         if val is None:
-            return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{TEXT2};{bl}">—</td>'
-        return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{TEXT};{bl}">{val:.2f}%</td>'
+            return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{TEXT2};{bl}">—</td>'
+        return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{TEXT};{bl}">{val:.2f}%</td>'
 
     def _pb_td(apy_val):
         bl = f"border-left:2px solid {PB_BLUE};"
         if apy_val is None:
-            return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{TEXT2};{bl}">—</td>'
-        return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{PB_BLUE};font-weight:700;{bl}">{apy_val:.2f}%</td>'
+            return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{TEXT2};{bl}">—</td>'
+        return f'<td style="padding:5px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{PB_BLUE};font-weight:700;{bl}">{apy_val:.2f}%</td>'
 
     def _section_header(label, color, col_count):
         return (
             f'<tr style="background:{color}15;">'
-            f'<td colspan="{col_count}" style="padding:7px 10px;font-size:13px;font-weight:700;'
+            f'<td colspan="{col_count}" style="padding:7px 10px;font-size:16px;font-weight:700;'
             f'color:{color};letter-spacing:.05em;border-top:2px solid {color};'
             f'border-bottom:1px solid {BORDER};">{label}</td>'
             f'</tr>'
@@ -220,7 +220,7 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
     def _bank_header_row(peers, badge_color):
         return (
             f'<tr style="border-bottom:2px solid {BORDER};">'
-            f'<th style="padding:5px 10px;text-align:left;color:{TEXT2};font-size:12px;background:{SURFACE};">Tenor</th>'
+            f'<th style="padding:5px 10px;text-align:left;color:{TEXT2};font-size:15px;background:{SURFACE};">Tenor</th>'
             + "".join(_bank_hdr(b["name"], badge_color) for b in peers)
             + _pb_hdr()
             + '</tr>'
@@ -239,7 +239,7 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
             )
             rows += (
                 f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">'
-                f'<td style="padding:6px 10px;font-size:14px;color:{TEXT};white-space:nowrap;font-weight:600;">{tenor}</td>'
+                f'<td style="padding:6px 10px;font-size:17px;color:{TEXT};white-space:nowrap;font-weight:600;">{tenor}</td>'
                 f'{peer_cells}{_pb_td(pb_apy)}'
                 f'</tr>'
             )
@@ -262,16 +262,16 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
         tables_html += f"""
         <div style="margin-bottom:36px;">
           <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px;">
-            <span style="font-size:15px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;">
+            <span style="font-size:18px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;">
               CD Tier {tier_idx + 1} — {tier_label}
             </span>
-            <span style="font-size:13px;color:{TEXT2};">
+            <span style="font-size:16px;color:{TEXT2};">
               Peer APY = nearest tenor bucket &nbsp;·&nbsp;
               <span style="color:{PB_BLUE};font-weight:600;">★ Popular Bank</span> = Tier {tier_idx + 1} APY
             </span>
           </div>
           <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:13px;">
+            <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:16px;">
               <thead>{ny_section}{ny_hdrs}</thead>
               <tbody>
                 {ny_rows}
@@ -284,7 +284,7 @@ def _unified_cd_table(ny_group, sfl_group, pb_cd_tiers):
 
     return f"""
     <div style="margin-bottom:10px;">
-      <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px;">
+      <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px;">
         CD Tenor Comparison — Brick &amp; Mortar Peers vs. Popular Bank (All 5 Tiers)
       </div>
       {tables_html}
@@ -296,12 +296,12 @@ def _cd_tier_table(cd_tiers):
     tenors = cd_tiers["tenors"]
 
     tier_hdrs = "".join(
-        f'<th colspan="2" style="padding:7px 10px;text-align:center;color:{PB_BLUE};font-size:13px;border-left:1px solid {BORDER};white-space:nowrap;font-weight:700;">{t}</th>'
+        f'<th colspan="2" style="padding:7px 10px;text-align:center;color:{PB_BLUE};font-size:17px;border-left:1px solid {BORDER};white-space:nowrap;font-weight:700;">{t}</th>'
         for t in tiers
     )
     sub_hdrs = "".join(
-        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:13px;border-left:1px solid {BORDER};font-weight:600;">Rate</th>'
-        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:13px;font-weight:600;">APY</th>'
+        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:17px;border-left:1px solid {BORDER};font-weight:600;">Rate</th>'
+        f'<th style="padding:5px 8px;text-align:right;color:{TEXT2};font-size:17px;font-weight:600;">APY</th>'
         for _ in tiers
     )
 
@@ -309,21 +309,21 @@ def _cd_tier_table(cd_tiers):
     for i, (tenor, tier_vals) in enumerate(tenors.items()):
         bg = CARD if i % 2 == 0 else SURFACE
         cells = "".join(
-            f'<td style="padding:6px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{TEXT2};border-left:1px solid {BORDER};">{v["rate"]:.2f}%</td>'
-            f'<td style="padding:6px 8px;text-align:right;font-family:{MONO};font-size:13px;color:{TEXT};">{v["apy"]:.2f}%</td>'
+            f'<td style="padding:6px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{TEXT2};border-left:1px solid {BORDER};">{v["rate"]:.2f}%</td>'
+            f'<td style="padding:6px 8px;text-align:right;font-family:{MONO};font-size:16px;color:{TEXT};">{v["apy"]:.2f}%</td>'
             for v in tier_vals
         )
         rows += f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">' \
-                f'<td style="padding:6px 10px;font-size:14px;color:{TEXT};white-space:nowrap;">{tenor}</td>{cells}</tr>'
+                f'<td style="padding:6px 10px;font-size:17px;color:{TEXT};white-space:nowrap;">{tenor}</td>{cells}</tr>'
 
     return f"""
     <div style="margin-bottom:32px;">
-      <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Popular Bank — CD Rate Sheet (Consumer &amp; Business)</div>
+      <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Popular Bank — CD Rate Sheet (Consumer &amp; Business)</div>
       <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:13px;">
+        <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:16px;">
           <thead>
             <tr style="background:{SURFACE};border-bottom:2px solid {PB_BLUE};">
-              <th style="padding:8px 10px;text-align:left;color:{TEXT2};font-size:13px;font-weight:600;">Tenor</th>
+              <th style="padding:8px 10px;text-align:left;color:{TEXT2};font-size:17px;font-weight:600;">Tenor</th>
               {tier_hdrs}
             </tr>
             <tr style="background:{SURFACE};border-bottom:2px solid {BORDER};">
@@ -433,7 +433,7 @@ def _promo_cd_table(excel_path):
 
     # --- Build header row (tenor columns) ---
     tenor_hdrs = "".join(
-        f'<th style="padding:6px 9px;text-align:right;color:{TEXT2};font-size:13px;'
+        f'<th style="padding:6px 9px;text-align:right;color:{TEXT2};font-size:17px;'
         f'white-space:nowrap;border-left:1px solid {BORDER};font-weight:600;">{t}mo</th>'
         for t in all_tenors
     )
@@ -454,12 +454,12 @@ def _promo_cd_table(excel_path):
                 cell_color = PB_BLUE if is_pb else TEXT
             cells += (
                 f'<td style="padding:6px 9px;text-align:right;font-family:{MONO};'
-                f'font-size:13px;color:{cell_color};border-left:1px solid {BORDER};">'
+                f'font-size:17px;color:{cell_color};border-left:1px solid {BORDER};">'
                 f'{cell_txt}</td>'
             )
         return (
             f'<tr style="background:{bg};border-bottom:1px solid {BORDER};">'
-            f'<td style="padding:6px 10px;font-size:14px;color:{name_color};'
+            f'<td style="padding:6px 10px;font-size:18px;color:{name_color};'
             f'font-weight:{name_weight};white-space:nowrap;">{star}{_short(bank_name)}</td>'
             f'{cells}</tr>'
         )
@@ -469,7 +469,7 @@ def _promo_cd_table(excel_path):
         col_count = len(all_tenors) + 1
         return (
             f'<tr><td colspan="{col_count}" style="background:{color}18;'
-            f'padding:6px 12px;font-size:13px;font-weight:700;color:{color};'
+            f'padding:6px 12px;font-size:17px;font-weight:700;color:{color};'
             f'letter-spacing:.06em;border-top:2px solid {color};">{label}</td></tr>'
         )
 
@@ -498,18 +498,18 @@ def _promo_cd_table(excel_path):
 
     return f"""
     <div style="margin-bottom:36px;">
-      <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;
+      <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;
            letter-spacing:.08em;margin-bottom:6px;">Promotional CD Rate Comparison — NY Metro &amp; South Florida</div>
-      <div style="font-size:13px;color:{TEXT2};margin-bottom:10px;">
+      <div style="font-size:16px;color:{TEXT2};margin-bottom:10px;">
         Best available APY per tenor · Peer banks show highest APY across all balance tiers ·
         ★ Popular Bank shows Tier 1 ($1K–$25K) APY · Survey as of 10/26/2026
       </div>
       <div style="overflow-x:auto;">
         <table style="border-collapse:collapse;background:{CARD};border-radius:8px;
-               overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:13px;min-width:100%;">
+               overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.07);font-size:16px;min-width:100%;">
           <thead>
             <tr style="background:{SURFACE};border-bottom:2px solid {PB_BLUE};">
-              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:13px;
+              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:17px;
                   white-space:nowrap;font-weight:600;">Institution</th>
               {tenor_hdrs}
             </tr>
@@ -526,30 +526,30 @@ def build_html_email(config, report, fred_data):
     peer_groups   = config["peer_groups"]
 
     prod_hdrs = "".join(
-        f'<th style="padding:8px 12px;text-align:right;color:{TEXT2};font-size:14px;font-weight:600;">{lbl}</th>'
+        f'<th style="padding:8px 12px;text-align:right;color:{TEXT2};font-size:18px;font-weight:600;">{lbl}</th>'
         for lbl in RATE_LABELS.values()
     )
     subj_rows = ""
     for sb in subject_banks:
         r = sb["rates"]
         cells = "".join(
-            f'<td style="padding:8px 12px;text-align:right;font-family:{MONO};font-size:14px;color:{PB_BLUE};font-weight:600;">{_pct(r.get(p))}</td>'
+            f'<td style="padding:8px 12px;text-align:right;font-family:{MONO};font-size:18px;color:{PB_BLUE};font-weight:600;">{_pct(r.get(p))}</td>'
             for p in PRODUCTS
         )
         subj_rows += f"""
         <tr style="border-bottom:1px solid {BORDER};">
-          <td style="padding:8px 12px;font-size:14px;font-weight:600;color:{TEXT};">{sb['display_name']}</td>
+          <td style="padding:8px 12px;font-size:18px;font-weight:600;color:{TEXT};">{sb['display_name']}</td>
           {cells}
         </tr>"""
 
     subject_table = f"""
     <div style="margin-bottom:32px;">
-      <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Subject Banks — Current Rates</div>
+      <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Subject Banks — Current Rates</div>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
           <thead>
             <tr style="background:{SURFACE};border-bottom:2px solid {PB_BLUE};">
-              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:14px;font-weight:600;">Institution</th>
+              <th style="padding:8px 12px;text-align:left;color:{TEXT2};font-size:18px;font-weight:600;">Institution</th>
               {prod_hdrs}
             </tr>
           </thead>
@@ -583,8 +583,8 @@ def build_html_email(config, report, fred_data):
         "CD3NAX": "Nat'l 3Mo", "CD6NAX": "Nat'l 6Mo", "CD1NAX": "Nat'l 12Mo"
     }
     fred_cells = "".join(
-        f'<td style="padding:8px 16px;text-align:center;font-family:{MONO};font-size:14px;color:{TEXT};">'
-        f'<div style="color:{TEXT2};font-size:13px;margin-bottom:3px;font-weight:600;">{lbl}</div>'
+        f'<td style="padding:8px 16px;text-align:center;font-family:{MONO};font-size:18px;color:{TEXT};">'
+        f'<div style="color:{TEXT2};font-size:17px;margin-bottom:3px;font-weight:600;">{lbl}</div>'
         f'{_pct(fred_data.get(k))}</td>'
         for k, lbl in fred_mapping.items()
     )
@@ -605,26 +605,18 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 <body style="margin:0;padding:0;background:{BG};font-family:{FONT};color:{TEXT};-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;">
 <div style="max-width:1400px;margin:0 auto;padding:24px 16px;">
 
-  <!-- Header — Full-width Popular Bank blue band with logo -->
+  <!-- Header — Full-width Popular Bank blue band: title LEFT, logo RIGHT -->
   <div style="background:{PB_BLUE};border-radius:10px;padding:0;margin-bottom:28px;overflow:hidden;box-shadow:0 2px 8px rgba(0,48,135,0.25);">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td style="padding:20px 28px;vertical-align:middle;">
-          <table cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="padding-right:20px;vertical-align:middle;">
-                <img src="data:image/png;base64,{_PB_LOGO_B64}" style="height:56px;display:block;" alt="Popular Bank">
-              </td>
-              <td style="border-left:1px solid rgba(255,255,255,0.3);padding-left:20px;vertical-align:middle;">
-                <div style="font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-.02em;line-height:1.1;">DepositIQ</div>
-                <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:4px;letter-spacing:.02em;">Deposit Rate Intelligence • Popular Bank</div>
-              </td>
-            </tr>
-          </table>
+        <td style="padding:22px 28px;vertical-align:middle;">
+          <div style="font-size:36px;font-weight:700;color:#ffffff;letter-spacing:-.02em;line-height:1.1;">DepositIQ</div>
+          <div style="font-size:18px;color:rgba(255,255,255,0.85);margin-top:6px;letter-spacing:.02em;">Deposit Rate Intelligence • Popular Bank</div>
         </td>
-        <td align="right" style="padding:20px 28px;vertical-align:middle;">
-          <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:6px;">{now}</div>
-          <div>{_risk_badge(risk_level)}</div>
+        <td align="right" style="padding:22px 28px;vertical-align:middle;">
+          <img src="data:image/png;base64,{_PB_LOGO_B64}" style="height:80px;display:block;margin-left:auto;margin-bottom:10px;" alt="Popular Bank">
+          <div style="font-size:17px;color:rgba(255,255,255,0.8);margin-bottom:6px;text-align:right;">{now}</div>
+          <div style="text-align:right;">{_risk_badge(risk_level)}</div>
         </td>
       </tr>
     </table>
@@ -632,7 +624,7 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 
   <!-- National Benchmarks -->
   <div style="margin-bottom:28px;">
-    <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">National Benchmarks (FRED)</div>
+    <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">National Benchmarks (FRED)</div>
     <table style="width:100%;border-collapse:collapse;background:{CARD};border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
       <tr>{fred_cells}</tr>
     </table>
@@ -652,12 +644,12 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 
   <!-- Rate Analysis Cards -->
   <div style="margin-bottom:28px;">
-    <div style="font-size:16px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Regional Rate Analysis — Key Takeaways</div>
+    <div style="font-size:20px;font-weight:700;color:{PB_BLUE};text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Regional Rate Analysis — Key Takeaways</div>
     {analysis_cards}
   </div>
 
   <!-- Footer -->
-  <div style="border-top:2px solid {PB_BLUE};padding-top:16px;font-size:12px;color:{TEXT2};text-align:center;">
+  <div style="border-top:2px solid {PB_BLUE};padding-top:16px;font-size:16px;color:{TEXT2};text-align:center;">
     DepositIQ • Automated deposit intelligence powered by FDIC BankFind + FRED
     • Delivered every Monday 6:45 AM ET • Data may have 1-week lag
   </div>
