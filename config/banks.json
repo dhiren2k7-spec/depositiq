@@ -283,15 +283,15 @@
         "checking_apy": null,
         "savings": 3.9,
         "mma": null,
-        "cd_3mo": 4.3,
-        "cd_6mo": 4.35,
+        "cd_3mo": 3.9,
+        "cd_6mo": 4.15,
         "cd_9mo": null,
-        "cd_12mo": 4.6,
-        "cd_18mo": null,
-        "cd_24mo": 4.8,
-        "cd_36mo": null,
-        "cd_48mo": null,
-        "cd_60mo": null
+        "cd_12mo": 4.17,
+        "cd_18mo": 4.2,
+        "cd_24mo": 3.85,
+        "cd_36mo": 3.85,
+        "cd_48mo": 3.3,
+        "cd_60mo": 3.3
       }
     }
   ],

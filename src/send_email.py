@@ -614,7 +614,7 @@ body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
           <div style="font-size:18px;color:rgba(255,255,255,0.85);margin-top:6px;letter-spacing:.02em;">Deposit Rate Intelligence • Popular Bank</div>
         </td>
         <td align="right" style="padding:22px 28px;vertical-align:middle;">
-          <img src="data:image/png;base64,{_PB_LOGO_B64}" style="height:120px;display:block;margin-left:auto;margin-bottom:10px;" alt="Popular Bank">
+          <img src="data:image/png;base64,{_PB_LOGO_B64}" style="height:240px;display:block;margin-left:auto;margin-bottom:10px;" alt="Popular Bank">
           <div style="font-size:17px;color:rgba(255,255,255,0.8);margin-bottom:6px;text-align:right;">{now}</div>
           <div style="text-align:right;">{_risk_badge(risk_level)}</div>
         </td>
