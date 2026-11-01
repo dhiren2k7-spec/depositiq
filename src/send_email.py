@@ -82,7 +82,7 @@ def _rate_td(val, compare=None):
 def _region_badge(label, color):
     return f'<span style="display:inline-block;background:{color};color:#fff;font-size:14px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;">{label}</span>'
 
-def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subject=True):
+def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subject=True, subject_label="Popular Bank"):
     if rate_labels is None:
         rate_labels = RATE_LABELS
     products = list(rate_labels.keys())
@@ -121,7 +121,7 @@ def _peer_table(group_label, peers, subject_rates, rate_labels=None, show_subjec
           <tbody>
             {rows}
             {f'''<tr style="background:#e8f0fb;border-top:2px solid {PB_BLUE};">
-              <td style="padding:8px 12px;font-size:18px;color:{PB_BLUE};font-weight:700;">★ Popular Bank</td>
+              <td style="padding:8px 12px;font-size:18px;color:{PB_BLUE};font-weight:700;">★ {subject_label}</td>
               {subj_cells}
             </tr>''' if show_subject else ''}
           </tbody>
@@ -569,7 +569,7 @@ def build_html_email(config, report, fred_data):
     do_peers = do_grp.get("peers_with_rates", do_grp.get("banks", []))
 
     peer_tables = (
-        _peer_table(do_grp.get("label", "Popular Direct"), do_peers, subject_banks[1]["rates"], DO_RATE_LABELS, show_subject=False)
+        _peer_table(do_grp.get("label", "Popular Direct"), do_peers, subject_banks[1]["rates"], DO_RATE_LABELS, show_subject=True, subject_label="Popular Direct")
     )
 
     analysis_cards = (
