@@ -6,8 +6,9 @@ from datetime import datetime
 from fetch_data import fetch_all_peer_rates, fetch_fred_data
 from fetch_popular_direct import fetch_popular_direct_rates
 from generate_report import generate_report
-from send_email import build_html_email, send_email
+from send_email import build_html_email, send_email, generate_pdf
 from html_workbook import build_html_workbook
+from excel_output import build_excel
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../config/banks.json")
 
@@ -68,12 +69,23 @@ def run():
         f.write(workbook_html)
     print(f"  HTML workbook saved: {workbook_path}")
 
+    print("  Building Excel workbook...")
+    excel_path = build_excel(config_with_rates, report, fred_data, week_date)
+    print(f"  Excel saved: {excel_path}")
+
+    pdf_path = f"../output/DepositIQ_{safe_date}.pdf"
+    print("  Building PDF...")
+    generate_pdf(html_body, pdf_path)
+    print(f"  PDF saved: {pdf_path}")
+
     to_email = config["client"]["report_email"]
     bcc_email = config["client"].get("report_bcc", "")
     print(f"  Sending email to {to_email}...")
     status = send_email(html_body, to_email, None, week_date,
                         html_path=html_path,
                         workbook_path=workbook_path,
+                        excel_path=excel_path,
+                        pdf_path=pdf_path,
                         bcc_email=bcc_email)
     print(f"  Email status: {status}")
 
