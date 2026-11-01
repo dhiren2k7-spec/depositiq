@@ -680,7 +680,7 @@ def _attach_file(msg, path, filename, mime_type="application/octet-stream"):
     msg.attach(part)
 
 
-def send_email(html_body, to_email, from_email, week_date=None, excel_path=None, html_path=None, pdf_path=None, bcc_email=None):
+def send_email(html_body, to_email, from_email, week_date=None, excel_path=None, html_path=None, pdf_path=None, bcc_email=None, workbook_path=None):
     if week_date is None:
         week_date = datetime.now().strftime("%b %d, %Y")
 
@@ -709,6 +709,12 @@ def send_email(html_body, to_email, from_email, week_date=None, excel_path=None,
     if html_path and os.path.exists(html_path):
         _attach_file(msg, html_path,
                      f"DepositIQ_{safe_date}.html",
+                     "text/html")
+
+    # HTML workbook attachment
+    if workbook_path and os.path.exists(workbook_path):
+        _attach_file(msg, workbook_path,
+                     f"DepositIQ_Workbook_{safe_date}.html",
                      "text/html")
 
     # PDF attachment

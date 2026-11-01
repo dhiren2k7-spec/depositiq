@@ -7,6 +7,7 @@ from fetch_data import fetch_all_peer_rates, fetch_fred_data
 from fetch_popular_direct import fetch_popular_direct_rates
 from generate_report import generate_report
 from send_email import build_html_email, send_email
+from html_workbook import build_html_workbook
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../config/banks.json")
 
@@ -52,19 +53,27 @@ def run():
     print("  Building HTML email...")
     html_body = build_html_email(config_with_rates, report, fred_data)
 
-    # Save HTML report to disk
+    print("  Building HTML workbook...")
+    workbook_html = build_html_workbook(config_with_rates, report, fred_data, week_date)
+
+    # Save HTML outputs to disk
     os.makedirs("../output", exist_ok=True)
     safe_date = week_date.replace(" ", "_").replace(",", "")
     html_path = f"../output/DepositIQ_{safe_date}.html"
+    workbook_path = f"../output/DepositIQ_Workbook_{safe_date}.html"
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(html_body)
-    print(f"  HTML saved: {html_path}")
+    print(f"  HTML email saved: {html_path}")
+    with open(workbook_path, "w", encoding="utf-8") as f:
+        f.write(workbook_html)
+    print(f"  HTML workbook saved: {workbook_path}")
 
     to_email = config["client"]["report_email"]
     bcc_email = config["client"].get("report_bcc", "")
     print(f"  Sending email to {to_email}...")
     status = send_email(html_body, to_email, None, week_date,
                         html_path=html_path,
+                        workbook_path=workbook_path,
                         bcc_email=bcc_email)
     print(f"  Email status: {status}")
 
