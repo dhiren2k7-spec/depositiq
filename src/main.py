@@ -4,6 +4,7 @@ import copy
 from datetime import datetime
 
 from fetch_data import fetch_all_peer_rates, fetch_fred_data
+from fetch_popular_direct import fetch_popular_direct_rates
 from generate_report import generate_report
 from send_email import build_html_email, send_email, generate_pdf
 from excel_output import build_excel
@@ -28,6 +29,11 @@ def run():
 
     print("  Fetching peer bank rates from FDIC...")
     peer_groups = fetch_all_peer_rates(copy.deepcopy(config))
+
+    print("  Fetching Popular Direct live rates from cdvalet.com...")
+    for bank in config["subject_banks"]:
+        if bank.get("id") == "popular_direct":
+            bank["rates"] = fetch_popular_direct_rates(bank.get("rates", {}))
 
     config_with_rates = dict(config)
     config_with_rates["peer_groups"] = peer_groups
